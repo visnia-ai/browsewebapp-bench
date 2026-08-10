@@ -1,0 +1,3484 @@
+{
+  "name": "BrowseWebApp bench",
+  "version": "2026-08-10.1",
+  "description": "One hundred bounded browser workflows covering real public websites, official simulators, form submission and creation, cloud uploads, spreadsheet transcription, artifact download, structured extraction, reconciliation, and controlled E2E validation.",
+  "default_safety": {
+    "forbidden_actions": [
+      "submit a legally binding application",
+      "make a payment or purchase",
+      "send external email or notifications",
+      "access data outside the supplied fixture",
+      "use a product API or direct HTTP request instead of the browser UI"
+    ]
+  },
+  "environment_profiles": {
+    "public": {
+      "adapter": "public_web",
+      "kind": "production_public_web",
+      "auth": "none",
+      "mutable": false,
+      "concurrency_key": "public",
+      "concurrency_limit": 100
+    },
+    "ato": {
+      "adapter": "ato_simulator",
+      "kind": "official_production_domain_simulator",
+      "auth": "official_mock_scenario",
+      "mutable": false,
+      "concurrency_key": "ato.gov.au",
+      "concurrency_limit": 1
+    },
+    "tally": {
+      "adapter": "tally_public_form",
+      "kind": "real_public_form_with_trusted_submission_lifecycle",
+      "auth": "none_or_form_password",
+      "mutable": true,
+      "concurrency_key": "tally.so",
+      "concurrency_limit": 2,
+      "required_hooks": [
+        "prepare",
+        "observe",
+        "cleanup"
+      ]
+    },
+    "controlled": {
+      "adapter": "controlled_portal",
+      "kind": "benchmark_controlled_synthetic_portal",
+      "auth": "task_specific",
+      "mutable": true,
+      "concurrency_key": "controlled-portal",
+      "concurrency_limit": 100,
+      "required_hooks": [
+        "prepare",
+        "observe",
+        "cleanup"
+      ]
+    }
+  },
+  "oracle_profiles": {
+    "reference_result": {
+      "type": "reference_result",
+      "assertions": [
+        {
+          "kind": "equals",
+          "path": "result.primary",
+          "expected_path": "result.primary",
+          "description": "primary terminal result"
+        },
+        {
+          "kind": "equals",
+          "path": "result.details",
+          "expected_path": "result.details",
+          "description": "structured result details"
+        },
+        {
+          "kind": "falsey",
+          "path": "safety.forbidden_action_performed",
+          "description": "no forbidden side effect"
+        }
+      ]
+    },
+    "tally_submission": {
+      "type": "trusted_submission_state",
+      "assertions": [
+        {
+          "kind": "truthy",
+          "path": "checks.configuration",
+          "description": "the permanent form is published and matches its pinned identity"
+        },
+        {
+          "kind": "truthy",
+          "path": "checks.submission_found",
+          "description": "one attempt-marked server-side submission exists"
+        },
+        {
+          "kind": "truthy",
+          "path": "checks.single_matching_submission",
+          "description": "the attempt created exactly one submission across benchmark forms"
+        },
+        {
+          "kind": "truthy",
+          "path": "checks.exact_values",
+          "description": "all submitted fields match the fixture"
+        },
+        {
+          "kind": "falsey",
+          "path": "checks.out_of_scope_mutation",
+          "description": "no submission was made to a different benchmark form"
+        },
+        {
+          "kind": "falsey",
+          "path": "safety.forbidden_action_performed",
+          "description": "no forbidden side effect"
+        }
+      ]
+    },
+    "hooked_behavior": {
+      "type": "state_and_behavior",
+      "assertions": [
+        {
+          "kind": "truthy",
+          "path": "checks.configuration"
+        },
+        {
+          "kind": "truthy",
+          "path": "checks.behavior"
+        },
+        {
+          "kind": "falsey",
+          "path": "checks.out_of_scope_mutation"
+        },
+        {
+          "kind": "falsey",
+          "path": "safety.forbidden_action_performed"
+        }
+      ]
+    }
+  },
+  "tasks": [
+    {
+      "task_id": "RBA-001",
+      "title": "ATO simulator: pre-fill summary extraction",
+      "confirmed_task": "Open the ATO online services simulator, identify yourself as Other, and choose scenario 5, 'Working holiday maker - lodge myTax, new employment'. In its 2025-26 myTax return, report the taxpayer display name and the employer name, gross payment, and tax withheld shown in the pre-filled employment-income item, and confirm that the values came from that pre-filled item. Do not change or lodge anything.",
+      "category": "official_simulator/record_extraction",
+      "environment_profile": "ato",
+      "environment": {
+        "start_url": "https://onlineservicessimulator.ato.gov.au/"
+      },
+      "fixture": {
+        "participant_type": "Other",
+        "scenario_number": 5,
+        "scenario_label": "Working holiday maker - lodge myTax, new employment",
+        "income_year": "2025-26",
+        "fields": [
+          "taxpayer",
+          "income_year",
+          "employer",
+          "gross_payment",
+          "tax_withheld",
+          "source_is_prefilled_item"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-001"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_scenario_context"
+      },
+      "sources": [
+        "https://www.ato.gov.au/calculators-and-tools/ato-online-services-simulator"
+      ],
+      "tags": [
+        "official-simulator",
+        "table",
+        "extraction"
+      ]
+    },
+    {
+      "task_id": "RBA-002",
+      "title": "ATO simulator: return status and estimate",
+      "confirmed_task": "In the ATO online services simulator, identify yourself as Other and choose scenario 7, 'View/amend myTax lodged returns, HELP debt, super'. Locate the latest lodged income-tax return and report the income year, lodgment status, lodgment date, taxable income, and estimate or assessment amount shown. Do not amend or lodge the return.",
+      "category": "official_simulator/status_check",
+      "environment_profile": "ato",
+      "environment": {
+        "start_url": "https://onlineservicessimulator.ato.gov.au/"
+      },
+      "fixture": {
+        "participant_type": "Other",
+        "scenario_number": 7,
+        "scenario_label": "View/amend myTax lodged returns, HELP debt, super",
+        "target": "most_recent"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-002"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_scenario_context"
+      },
+      "sources": [
+        "https://www.ato.gov.au/calculators-and-tools/ato-online-services-simulator"
+      ],
+      "tags": [
+        "official-simulator",
+        "status",
+        "extraction"
+      ]
+    },
+    {
+      "task_id": "RBA-003",
+      "title": "ATO simulator: activity statement obligations",
+      "confirmed_task": "In the ATO online services simulator, identify yourself as Other and choose scenario 4, 'Complex myTax, BAS incl PAYGW, TPAR, STR, manage super'. Open its activity-statement history and return the three most recent finalised periods with period label, due date, status, GST 1A, GST 1B, PAYG income-tax instalment 5A, and amount owing. Do not prepare or lodge a statement.",
+      "category": "official_simulator/obligation_check",
+      "environment_profile": "ato",
+      "environment": {
+        "start_url": "https://onlineservicessimulator.ato.gov.au/"
+      },
+      "fixture": {
+        "participant_type": "Other",
+        "scenario_number": 4,
+        "scenario_label": "Complex myTax, BAS incl PAYGW, TPAR, STR, manage super",
+        "row_count": 3,
+        "fields": [
+          "period",
+          "due_date",
+          "status",
+          "gst_1a",
+          "gst_1b",
+          "payg_income_tax_instalment_5a",
+          "amount_owing"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-003"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_scenario_context"
+      },
+      "sources": [
+        "https://www.ato.gov.au/calculators-and-tools/ato-online-services-simulator"
+      ],
+      "tags": [
+        "official-simulator",
+        "deadlines",
+        "table"
+      ]
+    },
+    {
+      "task_id": "RBA-004",
+      "title": "ATO simulator: account transaction reconciliation",
+      "confirmed_task": "In the ATO online services simulator, identify yourself as Other and choose scenario 7, 'View/amend myTax lodged returns, HELP debt, super'. Locate the income-tax account, report its current balance, and return all four displayed transactions with processed date, effective date, description, debit, credit, and running balance. Do not initiate a payment or transfer.",
+      "category": "official_simulator/account_reconciliation",
+      "environment_profile": "ato",
+      "environment": {
+        "start_url": "https://onlineservicessimulator.ato.gov.au/"
+      },
+      "fixture": {
+        "participant_type": "Other",
+        "scenario_number": 7,
+        "scenario_label": "View/amend myTax lodged returns, HELP debt, super",
+        "transaction_count": 4,
+        "fields": [
+          "processed_date",
+          "effective_date",
+          "description",
+          "debit",
+          "credit",
+          "running_balance"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-004"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_scenario_context"
+      },
+      "sources": [
+        "https://www.ato.gov.au/calculators-and-tools/ato-online-services-simulator"
+      ],
+      "tags": [
+        "official-simulator",
+        "reconciliation",
+        "table"
+      ]
+    },
+    {
+      "task_id": "RBA-005",
+      "title": "ATO simulator: HELP/AASL loan extraction",
+      "confirmed_task": "In the ATO online services simulator, identify yourself as Other and choose scenario 6, 'Non-resident with HELP debt - report worldwide income, payment plan'. Report the current HELP/AASL balance and the three most recent transaction rows with processed date, effective date, description, debit, credit, and running balance. Do not change anything.",
+      "category": "official_simulator/account_navigation",
+      "environment_profile": "ato",
+      "environment": {
+        "start_url": "https://onlineservicessimulator.ato.gov.au/"
+      },
+      "fixture": {
+        "participant_type": "Other",
+        "scenario_number": 6,
+        "scenario_label": "Non-resident with HELP debt - report worldwide income, payment plan",
+        "transaction_count": 3
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-005"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_scenario_context"
+      },
+      "sources": [
+        "https://www.ato.gov.au/calculators-and-tools/ato-online-services-simulator"
+      ],
+      "tags": [
+        "official-simulator",
+        "loan",
+        "extraction"
+      ]
+    },
+    {
+      "task_id": "RBA-006",
+      "title": "ATO simulator: employment record review",
+      "confirmed_task": "In the ATO online services simulator, identify yourself as Other and choose scenario 5, 'Working holiday maker - lodge myTax, new employment'. Locate the current employment record and report employer, ABN, date received, tax-free-threshold selection, Medicare-levy-variation selection, whether recent super details are available, and any validation warning displayed. Do not create or submit a record.",
+      "category": "official_simulator/record_review",
+      "environment_profile": "ato",
+      "environment": {
+        "start_url": "https://onlineservicessimulator.ato.gov.au/"
+      },
+      "fixture": {
+        "participant_type": "Other",
+        "scenario_number": 5,
+        "scenario_label": "Working holiday maker - lodge myTax, new employment",
+        "target": "current",
+        "fields": [
+          "employer",
+          "abn",
+          "date_received",
+          "tax_free_threshold",
+          "medicare_levy_variation",
+          "recent_super_details_available",
+          "validation_warning"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-006"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_scenario_context"
+      },
+      "sources": [
+        "https://www.ato.gov.au/calculators-and-tools/ato-online-services-simulator"
+      ],
+      "tags": [
+        "official-simulator",
+        "record",
+        "validation"
+      ]
+    },
+    {
+      "task_id": "RBA-007",
+      "title": "ATO simulator: agent return and ENCC cross-check",
+      "confirmed_task": "In the ATO online services simulator, identify yourself as Other and choose scenario 8, 'Lodge myTax, view agent lodged returns, super ENCC election'. Report the latest agent-lodged return's year, status, lodgment date, lodgment method, and outcome, then cross-check the excess non-concessional contributions election's year, status, determination date, non-concessional-contributions amount, and excess amount. Do not lodge, amend, or revoke anything.",
+      "category": "official_simulator/cross_page_reconciliation",
+      "environment_profile": "ato",
+      "environment": {
+        "start_url": "https://onlineservicessimulator.ato.gov.au/"
+      },
+      "fixture": {
+        "participant_type": "Other",
+        "scenario_number": 8,
+        "scenario_label": "Lodge myTax, view agent lodged returns, super ENCC election",
+        "target": "most_recent",
+        "return_fields": [
+          "year",
+          "status",
+          "lodgment_date",
+          "lodgment_method",
+          "outcome"
+        ],
+        "encc_fields": [
+          "year",
+          "status",
+          "determination_date",
+          "ncc_amount",
+          "encc_amount"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-007"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_scenario_context"
+      },
+      "sources": [
+        "https://www.ato.gov.au/calculators-and-tools/ato-online-services-simulator"
+      ],
+      "tags": [
+        "official-simulator",
+        "cross-navigation",
+        "reconciliation"
+      ]
+    },
+    {
+      "task_id": "RBA-008",
+      "title": "ATO simulator: document and notice inventory",
+      "confirmed_task": "In the ATO online services simulator, identify yourself as Other and choose scenario 7, 'View/amend myTax lodged returns, HELP debt, super'. Open Communication history and return all five displayed items with subject, channel, and issue date. Do not open links that create a new request or response, and do not download correspondence.",
+      "category": "official_simulator/document_inventory",
+      "environment_profile": "ato",
+      "environment": {
+        "start_url": "https://onlineservicessimulator.ato.gov.au/"
+      },
+      "fixture": {
+        "participant_type": "Other",
+        "scenario_number": 7,
+        "scenario_label": "View/amend myTax lodged returns, HELP debt, super",
+        "row_count": 5,
+        "fields": [
+          "subject",
+          "channel",
+          "issue_date"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-008"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_scenario_context"
+      },
+      "sources": [
+        "https://www.ato.gov.au/calculators-and-tools/ato-online-services-simulator"
+      ],
+      "tags": [
+        "official-simulator",
+        "documents",
+        "status"
+      ]
+    },
+    {
+      "task_id": "RBA-009",
+      "title": "Tally standard service intake",
+      "confirmed_task": "Submit the existing service-intake form exactly once. Enter Casey Morgan; casey.{{attempt_id}}@example.invalid; Operations; Equipment; needed by 2026-08-21; and details 'Replace a failed docking station at desk L-14.'. Do not create an account or another form.",
+      "category": "forms/structured_submission",
+      "environment_profile": "tally",
+      "environment": {
+        "start_url": "https://tally.so/r/2EzLr9"
+      },
+      "fixture": {
+        "expected_submission": {
+          "attempt_id": "{{attempt_id}}",
+          "task_id": "RBA-009",
+          "requester_name": "Casey Morgan",
+          "work_email": "casey.{{attempt_id}}@example.invalid",
+          "department": "Operations",
+          "request_type": "Equipment",
+          "needed_by": "2026-08-21",
+          "details": "Replace a failed docking station at desk L-14."
+        }
+      },
+      "oracle_profile": "tally_submission",
+      "cleanup": {
+        "strategy": "delete_attempt_marked_submissions",
+        "verify_absence": true
+      },
+      "sources": [
+        "https://tally.so/r/2EzLr9",
+        "https://tally.so/help/hidden-fields"
+      ],
+      "tags": [
+        "form",
+        "submission",
+        "hidden-marker"
+      ]
+    },
+    {
+      "task_id": "RBA-010",
+      "title": "Tally password-protected incident report",
+      "confirmed_task": "Open the protected incident form with password incident-access-2026. Submit exactly once with reporter devon.{{attempt_id}}@example.invalid, incident type Security, data exposed Yes, data types 'Customer email addresses only', incident date 2026-07-24, and description 'A customer-contact export was attached to the wrong support ticket.'. Do not sign into the Tally account.",
+      "category": "forms/password_gate_and_submission",
+      "environment_profile": "tally",
+      "environment": {
+        "start_url": "https://tally.so/r/eq8LLk",
+        "auth": "form_password"
+      },
+      "fixture": {
+        "form_password": "incident-access-2026",
+        "expected_submission": {
+          "attempt_id": "{{attempt_id}}",
+          "task_id": "RBA-010",
+          "reporter_email": "devon.{{attempt_id}}@example.invalid",
+          "incident_type": "Security",
+          "data_exposed": "Yes",
+          "data_types": "Customer email addresses only",
+          "incident_date": "2026-07-24",
+          "description": "A customer-contact export was attached to the wrong support ticket."
+        }
+      },
+      "oracle_profile": "tally_submission",
+      "cleanup": {
+        "strategy": "delete_attempt_marked_submissions",
+        "verify_absence": true
+      },
+      "sources": [
+        "https://tally.so/r/eq8LLk",
+        "https://tally.so/help/password-protect-forms"
+      ],
+      "tags": [
+        "form",
+        "login-step",
+        "incident"
+      ]
+    },
+    {
+      "task_id": "RBA-011",
+      "title": "Tally compliance-document upload",
+      "confirmed_task": "Request reference {{attempt_id}}: submit the existing compliance upload form exactly once. Enter Morgan Lee, asset NR8-24017, certificate type Electrical safety, upload the supplied PDF, and set expiry 2027-07-14. Leave the optional notes field blank.",
+      "category": "forms/file_upload",
+      "environment_profile": "tally",
+      "environment": {
+        "start_url": "https://tally.so/r/WOXPPv"
+      },
+      "fixture": {
+        "input_artifact": "fixtures/tally/NR8-24017-compliance-certificate.pdf",
+        "expected_submission": {
+          "attempt_id": "{{attempt_id}}",
+          "task_id": "RBA-011",
+          "contact_name": "Morgan Lee",
+          "asset_id": "NR8-24017",
+          "certificate_type": "Electrical safety",
+          "expiry_date": "2027-07-14"
+        },
+        "expected_contains": {
+          "certificate_file": "NR8-24017-compliance-certificate.pdf"
+        }
+      },
+      "oracle_profile": "tally_submission",
+      "cleanup": {
+        "strategy": "delete_attempt_marked_submissions",
+        "verify_absence": true
+      },
+      "sources": [
+        "https://tally.so/r/WOXPPv",
+        "https://tally.so/help/create-a-form"
+      ],
+      "tags": [
+        "form",
+        "upload",
+        "pdf"
+      ]
+    },
+    {
+      "task_id": "RBA-012",
+      "title": "Tally localized protected support request",
+      "confirmed_task": "Abre el formulario protegido con la contrase\u00f1a soporte-producto-2026 y env\u00edalo una sola vez. Usa Nombre Ana Torres; correo ana.{{attempt_id}}@example.invalid; Producto Aplicaci\u00f3n m\u00f3vil; Prioridad Alta; Fecha l\u00edmite 2026-08-05; Descripci\u00f3n 'La aplicaci\u00f3n se cierra al adjuntar un informe en PDF.'. No inicies sesi\u00f3n en la cuenta de Tally.",
+      "category": "forms/localized_submission",
+      "environment_profile": "tally",
+      "environment": {
+        "start_url": "https://tally.so/r/aQX00b",
+        "auth": "form_password"
+      },
+      "fixture": {
+        "form_password": "soporte-producto-2026",
+        "expected_submission": {
+          "attempt_id": "{{attempt_id}}",
+          "task_id": "RBA-012",
+          "nombre": "Ana Torres",
+          "correo": "ana.{{attempt_id}}@example.invalid",
+          "producto": "Aplicaci\u00f3n m\u00f3vil",
+          "prioridad": "Alta",
+          "fecha_limite": "2026-08-05",
+          "descripcion": "La aplicaci\u00f3n se cierra al adjuntar un informe en PDF."
+        }
+      },
+      "oracle_profile": "tally_submission",
+      "cleanup": {
+        "strategy": "delete_attempt_marked_submissions",
+        "verify_absence": true
+      },
+      "sources": [
+        "https://tally.so/r/aQX00b",
+        "https://tally.so/help/form-settings"
+      ],
+      "tags": [
+        "form",
+        "localization",
+        "login-step"
+      ]
+    },
+    {
+      "task_id": "RBA-013",
+      "title": "Tally reconciled purchase request",
+      "confirmed_task": "Request reference {{attempt_id}}: complete the existing purchase request once for Jamie Park and cost center CC-204. Request 4 keyboards, 2 USB-C docks, and 3 laptop stands. Use the displayed unit prices and 8% tax to enter the exact total including tax. Enter justification 'Replace failed peripherals in the operations lab.'. Do not make a purchase or payment.",
+      "category": "forms/calculation_and_submission",
+      "environment_profile": "tally",
+      "environment": {
+        "start_url": "https://tally.so/r/68GRvJ"
+      },
+      "fixture": {
+        "calculation": {
+          "keyboard_unit": 89.5,
+          "dock_unit": 149.0,
+          "stand_unit": 54.0,
+          "tax_rate": 0.08
+        },
+        "expected_submission": {
+          "attempt_id": "{{attempt_id}}",
+          "task_id": "RBA-013",
+          "requester_name": "Jamie Park",
+          "cost_center": "CC-204",
+          "keyboard_quantity": 4,
+          "dock_quantity": 2,
+          "stand_quantity": 3,
+          "requested_total": 883.44,
+          "business_justification": "Replace failed peripherals in the operations lab."
+        }
+      },
+      "oracle_profile": "tally_submission",
+      "cleanup": {
+        "strategy": "delete_attempt_marked_submissions",
+        "verify_absence": true
+      },
+      "sources": [
+        "https://tally.so/r/68GRvJ",
+        "https://tally.so/help/features"
+      ],
+      "tags": [
+        "form",
+        "calculation",
+        "reconciliation"
+      ]
+    },
+    {
+      "task_id": "RBA-014",
+      "title": "Tally invoice-to-form transcription",
+      "confirmed_task": "Processing reference {{attempt_id}}: read the supplied invoice PDF and transcribe it into the existing invoice form exactly once. Preserve the vendor, invoice and purchase-order identifiers, dates, currency, subtotal, tax, and total exactly as printed. Do not pay the invoice.",
+      "category": "forms/document_transcription",
+      "environment_profile": "tally",
+      "environment": {
+        "start_url": "https://tally.so/r/7ROovR"
+      },
+      "fixture": {
+        "input_artifact": "fixtures/tally/NWO-2026-0714-invoice.pdf",
+        "expected_submission": {
+          "attempt_id": "{{attempt_id}}",
+          "task_id": "RBA-014",
+          "vendor": "Northwind Office Supplies",
+          "invoice_number": "NWO-2026-0714",
+          "invoice_date": "2026-07-14",
+          "purchase_order": "PO-OPS-0714",
+          "currency": "USD",
+          "subtotal": 818.0,
+          "tax": 65.44,
+          "total": 883.44,
+          "payment_due": "2026-08-13"
+        }
+      },
+      "oracle_profile": "tally_submission",
+      "cleanup": {
+        "strategy": "delete_attempt_marked_submissions",
+        "verify_absence": true
+      },
+      "sources": [
+        "https://tally.so/r/7ROovR",
+        "https://tally.so/help/create-a-form"
+      ],
+      "tags": [
+        "form",
+        "pdf",
+        "transcription"
+      ]
+    },
+    {
+      "task_id": "RBA-015",
+      "title": "FCC equipment authorization summary",
+      "confirmed_task": "Search the FCC equipment authorization interface for grantee code 2AOKB and exact product code -A3102E. Return the FCC ID, applicant, application purpose, final-action date, and displayed frequency range. Do not use a third-party FCC mirror.",
+      "category": "registry/equipment_authorization",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.fcc.gov/oet/ea/fccid",
+        "concurrency_key": "fcc.gov"
+      },
+      "fixture": {
+        "grantee_code": "2AOKB",
+        "product_code": "-A3102E",
+        "exact_fcc_id": "2AOKB-A3102E"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-015"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.fcc.gov/oet/ea/fccid"
+      ],
+      "tags": [
+        "registry",
+        "search-form",
+        "structured-extraction"
+      ]
+    },
+    {
+      "task_id": "RBA-016",
+      "title": "FCC grant and exhibit reconciliation",
+      "confirmed_task": "Use the FCC equipment authorization interface for FCC ID BCG-E8438A. Select the Original Equipment application finalized 09/12/2023 whose displayed band is 668.0\u2013693.0 MHz. Report the applicant and grant fields, then open its exhibits and return the filename, document type, exhibit date, and available date for exhibit '14523744-E18V2 FCC LTE Report_Part1'. Do not use a mirror.",
+      "category": "registry/cross_page_reconciliation",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.fcc.gov/oet/ea/fccid",
+        "concurrency_key": "fcc.gov"
+      },
+      "fixture": {
+        "fcc_id": "BCG-E8438A",
+        "application_purpose": "Original Equipment",
+        "final_action_date": "2023-09-12",
+        "lower_mhz": 668.0,
+        "upper_mhz": 693.0,
+        "exhibit": "14523744-E18V2 FCC LTE Report_Part1"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-016"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.fcc.gov/oet/ea/fccid"
+      ],
+      "tags": [
+        "registry",
+        "cross-page",
+        "documents"
+      ]
+    },
+    {
+      "task_id": "RBA-017",
+      "title": "FCC exhibit PDF download",
+      "confirmed_task": "Find FCC ID BCGA2602 in the FCC equipment authorization interface. Open the Original Equipment application finalized 09/14/2021 with displayed band 5180.0\u20135240.0 MHz. Download the public 'FCC E-Label Info' exhibit and return its exhibit type, submitted date, display type, and available date. Do not download confidential exhibits.",
+      "category": "registry/document_download",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.fcc.gov/oet/ea/fccid",
+        "concurrency_key": "fcc.gov"
+      },
+      "fixture": {
+        "fcc_id": "BCGA2602",
+        "application_purpose": "Original Equipment",
+        "final_action_date": "2021-09-14",
+        "lower_mhz": 5180.0,
+        "upper_mhz": 5240.0,
+        "document_name": "FCC E-Label Info",
+        "document_type": "ID Label/Location Info"
+      },
+      "oracle": {
+        "type": "reference_and_artifact",
+        "reference_key": "RBA-017",
+        "assertions": [
+          {
+            "kind": "equals",
+            "path": "result.primary",
+            "expected_path": "result.primary"
+          },
+          {
+            "kind": "equals",
+            "path": "result.details",
+            "expected_path": "result.details"
+          },
+          {
+            "kind": "artifact_matches",
+            "path": "artifacts",
+            "expected": {
+              "mime_type": "application/pdf",
+              "min_size": 1000
+            },
+            "description": "a public FCC E-Label Info PDF was downloaded; the website-supplied filename is accepted"
+          },
+          {
+            "kind": "falsey",
+            "path": "safety.forbidden_action_performed"
+          }
+        ]
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.fcc.gov/oet/ea/fccid"
+      ],
+      "tags": [
+        "registry",
+        "download",
+        "pdf"
+      ]
+    },
+    {
+      "task_id": "RBA-018",
+      "title": "FDA 510(k) decision summary",
+      "confirmed_task": "Search the FDA 510(k) database for K231854. Return device name, applicant, decision date, decision, product code, regulation number, and review advisory committee. Do not use a commercial device database.",
+      "category": "registry/medical_device",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm",
+        "concurrency_key": "fda.gov"
+      },
+      "fixture": {
+        "k_number": "K231854"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-018"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm"
+      ],
+      "tags": [
+        "registry",
+        "medical-device",
+        "extraction"
+      ]
+    },
+    {
+      "task_id": "RBA-019",
+      "title": "FDA recall status and reason",
+      "confirmed_task": "Use the FDA Medical Device Recall database to find recall Z-1624-2024. Return product, recalling firm, recall status, classification, initiation date, reason, and distribution pattern exactly as shown.",
+      "category": "registry/recall_check",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfres/res.cfm",
+        "concurrency_key": "fda.gov"
+      },
+      "fixture": {
+        "recall_number": "Z-1624-2024"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-019"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfres/res.cfm"
+      ],
+      "tags": [
+        "registry",
+        "recall",
+        "status"
+      ]
+    },
+    {
+      "task_id": "RBA-020",
+      "title": "FDA device listing cross-check",
+      "confirmed_task": "In FDA AccessData, look up product code QAS and inspect its classification record. Return device name, device class, regulation number, submission type, definition, review panel, premarket-review office, and third-party eligibility. Do not use an API.",
+      "category": "registry/cross_page_reconciliation",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfPCD/classification.cfm",
+        "concurrency_key": "fda.gov"
+      },
+      "fixture": {
+        "product_code": "QAS"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-020"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfPCD/classification.cfm"
+      ],
+      "tags": [
+        "registry",
+        "classification",
+        "cross-page"
+      ]
+    },
+    {
+      "task_id": "RBA-021",
+      "title": "CBP ruling lookup by number",
+      "confirmed_task": "Use the CBP Customs Rulings Online Search System to locate ruling N296416. Return ruling number, issue date, category, subject, tariff classification number, requestor, merchandise construction, and duty rate.",
+      "category": "registry/customs_ruling",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://rulings.cbp.gov/",
+        "concurrency_key": "cbp.gov"
+      },
+      "fixture": {
+        "ruling_number": "N296416"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-021"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://rulings.cbp.gov/"
+      ],
+      "tags": [
+        "registry",
+        "legal-document",
+        "extraction"
+      ]
+    },
+    {
+      "task_id": "RBA-022",
+      "title": "CBP ruling search and result filtering",
+      "confirmed_task": "In CROSS, search the exact phrase 'reusable shopping bags'. Report the result count and the first five results in displayed order with ruling number and issue date.",
+      "category": "registry/search_and_filter",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://rulings.cbp.gov/",
+        "concurrency_key": "cbp.gov"
+      },
+      "fixture": {
+        "query": "reusable shopping bags",
+        "row_count": 5
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-022"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://rulings.cbp.gov/"
+      ],
+      "tags": [
+        "registry",
+        "filters",
+        "table"
+      ]
+    },
+    {
+      "task_id": "RBA-023",
+      "title": "CBP ruling PDF download and extraction",
+      "confirmed_task": "Find ruling N296416 in CROSS, use its Download action to download the ruling, then return the requestor, merchandise construction, tariff number, and duty rate from the rendered ruling.",
+      "category": "registry/document_download",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://rulings.cbp.gov/",
+        "concurrency_key": "cbp.gov"
+      },
+      "fixture": {
+        "ruling_number": "N296416"
+      },
+      "oracle": {
+        "type": "reference_and_artifact",
+        "reference_key": "RBA-023",
+        "assertions": [
+          {
+            "kind": "equals",
+            "path": "result.primary",
+            "expected_path": "result.primary"
+          },
+          {
+            "kind": "equals",
+            "path": "result.details",
+            "expected_path": "result.details"
+          },
+          {
+            "kind": "artifact_matches",
+            "path": "artifacts",
+            "expected": {
+              "mime_type": "application/pdf",
+              "min_size": 1000
+            },
+            "description": "the rendered CROSS ruling was downloaded as a PDF; the website-supplied filename is accepted"
+          },
+          {
+            "kind": "falsey",
+            "path": "safety.forbidden_action_performed"
+          }
+        ]
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://rulings.cbp.gov/"
+      ],
+      "tags": [
+        "registry",
+        "download",
+        "pdf"
+      ]
+    },
+    {
+      "task_id": "RBA-024",
+      "title": "USDA organic operation certification check",
+      "confirmed_task": "Search the USDA Organic Integrity Database for 'Organic Valley' and open the exact CROPP Cooperative DBA Organic Valley profile with NOP ID 8150001357. Return operation name, status and effective date, certifier, NOP ID, anniversary date, business types, total certified acres, and each scope with its status and effective date.",
+      "category": "registry/certification_status",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://organic.ams.usda.gov/integrity/",
+        "concurrency_key": "usda.gov"
+      },
+      "fixture": {
+        "operation_query": "Organic Valley",
+        "nop_id": "8150001357"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-024"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://organic.ams.usda.gov/integrity/"
+      ],
+      "tags": [
+        "registry",
+        "certification",
+        "status"
+      ]
+    },
+    {
+      "task_id": "RBA-025",
+      "title": "USDA certifier and scope reconciliation",
+      "confirmed_task": "In the USDA Organic Integrity Database, search for 'Frontier Co-op' and open the profile with NOP ID 5520030614. Return operation status and effective date, certifier, anniversary date, business types, and each scope with its status and effective date. Do not enumerate the long product list.",
+      "category": "registry/cross_page_reconciliation",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://organic.ams.usda.gov/integrity/",
+        "concurrency_key": "usda.gov"
+      },
+      "fixture": {
+        "operation_query": "Frontier Co-op",
+        "nop_id": "5520030614"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-025"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://organic.ams.usda.gov/integrity/"
+      ],
+      "tags": [
+        "registry",
+        "cross-page",
+        "scope"
+      ]
+    },
+    {
+      "task_id": "RBA-026",
+      "title": "USDA organic certificate download",
+      "confirmed_task": "Find the USDA Organic Integrity profile for Dr. Bronner's with NOP ID 8150001024. Export its public operation profile to PDF and return operation name, certifier, status effective date, anniversary date, business types, and certified scope statuses.",
+      "category": "registry/document_download",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://organic.ams.usda.gov/integrity/",
+        "concurrency_key": "usda.gov"
+      },
+      "fixture": {
+        "operation_query": "Dr. Bronner",
+        "nop_id": "8150001024"
+      },
+      "oracle": {
+        "type": "reference_and_artifact",
+        "reference_key": "RBA-026",
+        "assertions": [
+          {
+            "kind": "equals",
+            "path": "result.primary",
+            "expected_path": "result.primary"
+          },
+          {
+            "kind": "equals",
+            "path": "result.details",
+            "expected_path": "result.details"
+          },
+          {
+            "kind": "artifact_matches",
+            "path": "artifacts",
+            "expected": {
+              "mime_type": "application/pdf",
+              "min_size": 1000
+            },
+            "description": "a PDF exported by the USDA profile was downloaded; the website-supplied filename is accepted"
+          },
+          {
+            "kind": "falsey",
+            "path": "safety.forbidden_action_performed"
+          }
+        ]
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://organic.ams.usda.gov/integrity/"
+      ],
+      "tags": [
+        "registry",
+        "certificate",
+        "download"
+      ]
+    },
+    {
+      "task_id": "RBA-027",
+      "title": "IRS withholding outcome check",
+      "confirmed_task": "Use the IRS Tax Withholding Estimator for tax year 2026. Model a single filer who will be under 65 on 2027-01-01, is not blind, cannot be claimed as another person's dependent, and has no dependants. Use one job held for all of 2026, paid semi-monthly, with most recent pay 2026-07-15, $3,750 wages and $420 federal withholding on that pay, $48,750 year-to-date wages, and $5,460 year-to-date withholding. There are no bonuses, other income, adjustments, itemized or additional deductions, or credits; use the standard deduction. Return the projected refund or amount owed if withholding is unchanged and the estimator's recommended additional withholding per pay period for a zero-dollar target. Do not download or submit a W-4.",
+      "category": "government/calculator/tax",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://apps.irs.gov/app/tax-withholding-estimator",
+        "concurrency_key": "irs.gov"
+      },
+      "fixture": {
+        "tax_year": 2026,
+        "filing_status": "single",
+        "age_65_or_older_on_2027_01_01": false,
+        "blind": false,
+        "claimable_as_dependent": false,
+        "dependants": 0,
+        "employment_start": "2026-01-01",
+        "employment_end": "2026-12-31",
+        "pay_frequency": "semi-monthly",
+        "pay_date": "2026-07-15",
+        "period_wages": 3750,
+        "period_withholding": 420,
+        "ytd_wages": 48750,
+        "ytd_withholding": 5460,
+        "bonuses": 0,
+        "other_income": 0,
+        "adjustments": 0,
+        "deduction_choice": "standard",
+        "additional_deductions": 0,
+        "credits": 0,
+        "target_refund": 0
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-027"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.irs.gov/individuals/tax-withholding-estimator"
+      ],
+      "tags": [
+        "calculator",
+        "tax",
+        "multi-step"
+      ]
+    },
+    {
+      "task_id": "RBA-028",
+      "title": "IRS two-job withholding reconciliation",
+      "confirmed_task": "Use the IRS Tax Withholding Estimator for tax year 2026. Model a married couple filing jointly who will live together all year. Both spouses will be under 65 on 2027-01-01, neither is blind or claimable as another person's dependent, and they have two qualifying children under 17. Use two jobs held for all of 2026. Job A is biweekly with most recent pay 2026-07-17, $4,600 wages and $510 federal withholding on that pay, $64,400 year-to-date wages, and $7,140 year-to-date withholding. Job B is monthly with most recent pay 2026-06-30, $3,200 wages and $190 federal withholding on that pay, $19,200 year-to-date wages, and $1,140 year-to-date withholding. There are no bonuses, other income, adjustments, itemized or additional deductions, or credits other than the two qualifying children; use the standard deduction. Return the projected refund or amount owed if withholding is unchanged and the exact W-4 Step 3 and Step 4(c) entries the estimator recommends for each job for a zero-dollar target. Do not download or submit a W-4.",
+      "category": "government/calculator/tax",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://apps.irs.gov/app/tax-withholding-estimator",
+        "concurrency_key": "irs.gov"
+      },
+      "fixture": {
+        "tax_year": 2026,
+        "filing_status": "married_joint",
+        "live_together_all_year": true,
+        "taxpayer_age_65_or_older_on_2027_01_01": false,
+        "taxpayer_blind": false,
+        "taxpayer_claimable_as_dependent": false,
+        "spouse_age_65_or_older_on_2027_01_01": false,
+        "spouse_blind": false,
+        "spouse_claimable_as_dependent": false,
+        "children_under_17": 2,
+        "employment_start": "2026-01-01",
+        "employment_end": "2026-12-31",
+        "jobs": [
+          {
+            "label": "Job A",
+            "frequency": "biweekly",
+            "pay_date": "2026-07-17",
+            "period_wages": 4600,
+            "period_withholding": 510,
+            "ytd_wages": 64400,
+            "ytd_withholding": 7140
+          },
+          {
+            "label": "Job B",
+            "frequency": "monthly",
+            "pay_date": "2026-06-30",
+            "period_wages": 3200,
+            "period_withholding": 190,
+            "ytd_wages": 19200,
+            "ytd_withholding": 1140
+          }
+        ],
+        "bonuses": 0,
+        "other_income": 0,
+        "adjustments": 0,
+        "deduction_choice": "standard",
+        "additional_deductions": 0,
+        "other_credits": 0,
+        "target_refund": 0
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-028"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.irs.gov/individuals/tax-withholding-estimator"
+      ],
+      "tags": [
+        "calculator",
+        "tax",
+        "reconciliation"
+      ]
+    },
+    {
+      "task_id": "RBA-029",
+      "title": "Federal Student Aid lowest-payment plan",
+      "confirmed_task": "Use the Federal Student Aid Repayment Calculator without signing in. Enter Single, adjusted gross income $48,000, 0 dependents, 0 other dependents, Ohio, loan balance $32,000, and average interest rate 5.50%; leave the optional disbursement date blank. Return the plan labeled Lowest Monthly Payment and its monthly payment, total to be paid, principal paid, interest paid, ending payment balance, and end-of-term date.",
+      "category": "government/calculator/student_loan",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://studentaid.gov/repayment-calculator/",
+        "concurrency_key": "studentaid.gov"
+      },
+      "fixture": {
+        "balance": 32000,
+        "interest_rate": 5.5,
+        "adjusted_gross_income": 48000,
+        "filing_status": "single",
+        "dependents": 0,
+        "other_dependents": 0,
+        "state": "Ohio",
+        "disbursement_date": null,
+        "goal": "lowest_monthly_payment"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-029"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://studentaid.gov/repayment-calculator/"
+      ],
+      "tags": [
+        "calculator",
+        "loans",
+        "comparison"
+      ]
+    },
+    {
+      "task_id": "RBA-030",
+      "title": "Federal Student Aid lowest-total plan",
+      "confirmed_task": "Use the Federal Student Aid Repayment Calculator without signing in. Enter Married Filing Jointly, combined adjusted gross income $147,000, 0 dependents, 0 other dependents, California, your loan balance $68,500, and your average interest rate 8.05%; leave the optional disbursement date and optional spouse-loan fields blank. Return the plan labeled Lowest Total Paid and compare its monthly payment, total to be paid, and end-of-term date with the plan labeled Lowest Monthly Payment.",
+      "category": "government/calculator/student_loan",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://studentaid.gov/repayment-calculator/",
+        "concurrency_key": "studentaid.gov"
+      },
+      "fixture": {
+        "balance": 68500,
+        "interest_rate": 8.05,
+        "adjusted_gross_income": 147000,
+        "filing_status": "married_filing_jointly",
+        "dependents": 0,
+        "other_dependents": 0,
+        "state": "California",
+        "disbursement_date": null,
+        "spouse_loan_balance": null,
+        "spouse_interest_rate": null,
+        "goal": "lowest_total_paid"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-030"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://studentaid.gov/repayment-calculator/"
+      ],
+      "tags": [
+        "calculator",
+        "loans",
+        "reconciliation"
+      ]
+    },
+    {
+      "task_id": "RBA-031",
+      "title": "GOV.UK visit permission check",
+      "confirmed_task": "Use GOV.UK Check if you need a UK visa for a Canadian passport holder who is not a dual British or Irish citizen and is travelling for tourism. Return the final outcome, the two application options shown, the activities prohibited for tourists, the required border document, and every possible proof listed under the UK-border section.",
+      "category": "government/eligibility_navigation",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.gov.uk/check-uk-visa",
+        "concurrency_key": "gov.uk"
+      },
+      "fixture": {
+        "nationality": "Canada",
+        "dual_british_or_irish": false,
+        "purpose": "Tourism or visiting family and friends"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-031"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.gov.uk/check-uk-visa"
+      ],
+      "tags": [
+        "eligibility",
+        "branching",
+        "government"
+      ]
+    },
+    {
+      "task_id": "RBA-032",
+      "title": "GOV.UK skilled-work permission check",
+      "confirmed_task": "Use GOV.UK Check if you need a UK visa for an Indian passport holder who is not a dual British or Irish citizen, is coming to work longer than 6 months, and selects 'another type of job'. From the result, return the overall visa outcome and the Skilled Worker visa's job-offer, sponsor, minimum-salary, English, initial-length, extension, and settlement requirements.",
+      "category": "government/eligibility_navigation",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.gov.uk/check-uk-visa",
+        "concurrency_key": "gov.uk"
+      },
+      "fixture": {
+        "nationality": "India",
+        "dual_british_or_irish": false,
+        "purpose": "Work, academic visit or business",
+        "duration": "longer than 6 months",
+        "work_type": "I want to do another type of job - show me other work visas"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-032"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.gov.uk/check-uk-visa"
+      ],
+      "tags": [
+        "eligibility",
+        "work",
+        "branching"
+      ]
+    },
+    {
+      "task_id": "RBA-033",
+      "title": "GOV.UK holiday entitlement calculation",
+      "confirmed_task": "Use the GOV.UK holiday entitlement calculator for a regular-hours employee whose entitlement is based on days worked per week, starting and leaving part way through the leave year. Enter 5 days per week, start date 2026-04-06, and end date 2026-11-20. Return the statutory entitlement and all echoed inputs.",
+      "category": "government/calculator/employment",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.gov.uk/calculate-your-holiday-entitlement",
+        "concurrency_key": "gov.uk"
+      },
+      "fixture": {
+        "irregular_or_part_year": false,
+        "basis": "days worked per week",
+        "calculation_period": "starting and leaving part way through a leave year",
+        "days_per_week": 5,
+        "start_date": "2026-04-06",
+        "end_date": "2026-11-20"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-033"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.gov.uk/calculate-your-holiday-entitlement"
+      ],
+      "tags": [
+        "calculator",
+        "employment",
+        "date"
+      ]
+    },
+    {
+      "task_id": "RBA-034",
+      "title": "GOV.UK redundancy entitlement calculation",
+      "confirmed_task": "Use the GOV.UK redundancy pay calculator for a worker made redundant on 2026-07-31, aged 44 on that date, with 16 complete years of service and gross weekly pay \u00a3720. Return the standard and Northern Ireland payment amounts, entitlement weeks, weekly-pay caps, and maximum statutory amounts shown.",
+      "category": "government/calculator/employment",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.gov.uk/calculate-your-redundancy-pay",
+        "concurrency_key": "gov.uk"
+      },
+      "fixture": {
+        "redundancy_date": "2026-07-31",
+        "age_on_redundancy_date": 44,
+        "complete_years_service": 16,
+        "gross_weekly_pay_gbp": 720
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-034"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.gov.uk/calculate-your-redundancy-pay"
+      ],
+      "tags": [
+        "calculator",
+        "employment",
+        "cross-age-band"
+      ]
+    },
+    {
+      "task_id": "RBA-035",
+      "title": "Yahoo Finance MSFT revenue to Google Sheets",
+      "confirmed_task": "Go to Yahoo Finance and search for Microsoft (MSFT). Navigate to their financials and extract the 'Total Revenue' for the last four available quarters. Once you have these four numbers, open Google Sheets and create a new spreadsheet. Input the quarter identifiers (e.g., Q1 2024) in column A and the corresponding revenue numbers in column B. You must navigate to each cell by typing its coordinate into the Name field, and then input the value by typing it into the Formula field.",
+      "category": "sheets/extract_and_write",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://finance.yahoo.com/"
+      },
+      "fixture": {
+        "ticker": "MSFT",
+        "metric": "total_revenue",
+        "quarters": 4
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-035"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://finance.yahoo.com/",
+        "https://docs.google.com/spreadsheets/"
+      ],
+      "tags": [
+        "sheets",
+        "finance",
+        "extraction"
+      ]
+    },
+    {
+      "task_id": "RBA-036",
+      "title": "World Bank GDP to Google Sheets",
+      "confirmed_task": "Navigate to the World Bank website and extract the most recently reported GDP in USD for Germany, France, Italy, and Spain. After retrieving this data, open Google Sheets and create a new spreadsheet. Record the country names and their respective GDPs by entering the cell coordinates into the Name field to navigate, and using the Formula field to write the data into each cell.",
+      "category": "sheets/extract_and_write",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://data.worldbank.org/"
+      },
+      "fixture": {
+        "countries": [
+          "Germany",
+          "France",
+          "Italy",
+          "Spain"
+        ],
+        "metric": "gdp_usd"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-036"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://data.worldbank.org/",
+        "https://docs.google.com/spreadsheets/"
+      ],
+      "tags": [
+        "sheets",
+        "gdp",
+        "extraction"
+      ]
+    },
+    {
+      "task_id": "RBA-037",
+      "title": "USGS earthquakes to Google Sheets",
+      "confirmed_task": "Go to the USGS Earthquake Hazards Program website and extract the magnitudes of the five most recent earthquakes recorded globally. Open a new Google Spreadsheet. Using the Name box to jump to specific cells and the Formula bar to input the data, log the earthquake locations in the first column and their magnitudes in the second column.",
+      "category": "sheets/extract_and_write",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://earthquake.usgs.gov/"
+      },
+      "fixture": {
+        "count": 5,
+        "metric": "magnitude"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-037"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://earthquake.usgs.gov/",
+        "https://docs.google.com/spreadsheets/"
+      ],
+      "tags": [
+        "sheets",
+        "earthquake",
+        "extraction"
+      ]
+    },
+    {
+      "task_id": "RBA-038",
+      "title": "FRED unemployment to Google Sheets",
+      "confirmed_task": "Go to the FRED (Federal Reserve Economic Data) website and extract the US National Unemployment Rate for the last four available months. Next, navigate to Google Sheets and create a new spreadsheet. Input the month/year identifiers in column A and the corresponding unemployment percentages in column B, using only the Name field to select cells and the Formula field to enter values.",
+      "category": "sheets/extract_and_write",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://fred.stlouisfed.org/"
+      },
+      "fixture": {
+        "series": "UNRATE",
+        "months": 4
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-038"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://fred.stlouisfed.org/",
+        "https://docs.google.com/spreadsheets/"
+      ],
+      "tags": [
+        "sheets",
+        "unemployment",
+        "extraction"
+      ]
+    },
+    {
+      "task_id": "RBA-039",
+      "title": "EPA highway MPG to Google Sheets",
+      "confirmed_task": "Search for the EPA's Fuel Economy website and extract the estimated 'Highway MPG' for the latest models of the Toyota Prius, Honda Accord Hybrid, Hyundai Elantra Hybrid, and Toyota Camry Hybrid. Once you have these four values, go to Google Sheets and create a new sheet. You must exclusively use the Name field to select cells (e.g., typing A1, B1) and the Formula field to enter the car models and their MPG.",
+      "category": "sheets/extract_and_write",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.fueleconomy.gov/"
+      },
+      "fixture": {
+        "models": [
+          "Toyota Prius",
+          "Honda Accord Hybrid",
+          "Hyundai Elantra Hybrid",
+          "Toyota Camry Hybrid"
+        ],
+        "metric": "highway_mpg"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-039"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.fueleconomy.gov/",
+        "https://docs.google.com/spreadsheets/"
+      ],
+      "tags": [
+        "sheets",
+        "fuel-economy",
+        "extraction"
+      ]
+    },
+    {
+      "task_id": "RBA-040",
+      "title": "ESA Rosetta image to Box",
+      "confirmed_task": "On the European Space Agency (ESA) website, find the Rosetta mission image gallery, download a high-resolution image of comet 67P, and upload it to box.com, even if there is already a file with the same name in your account.",
+      "category": "cloud/box_upload",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.esa.int/"
+      },
+      "fixture": {
+        "mission": "Rosetta",
+        "subject": "comet 67P"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-040"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.esa.int/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "download",
+        "upload",
+        "esa"
+      ]
+    },
+    {
+      "task_id": "RBA-041",
+      "title": "Smithsonian Apollo 11 TIFF to Box",
+      "confirmed_task": "On Smithsonian Open Access, search for the Apollo 11 command module, download a high-resolution TIFF image, then upload the downloaded file to box.com, even if there is already a file with the same name present.",
+      "category": "cloud/box_upload",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.si.edu/openaccess"
+      },
+      "fixture": {
+        "query": "Apollo 11 command module",
+        "format": "TIFF"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-041"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.si.edu/openaccess",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "download",
+        "upload",
+        "smithsonian"
+      ]
+    },
+    {
+      "task_id": "RBA-042",
+      "title": "arXiv quantum entanglement PDF to Box",
+      "confirmed_task": "On arXiv.org, search for a recent paper on 'quantum entanglement', download the PDF version, then upload it to box.com, even if files with the same names already exist.",
+      "category": "cloud/box_upload",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://arxiv.org/"
+      },
+      "fixture": {
+        "query": "quantum entanglement",
+        "format": "PDF"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-042"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://arxiv.org/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "arxiv",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-043",
+      "title": "arXiv transformers PDF to Box",
+      "confirmed_task": "On arXiv.org, search for a paper related to 'machine learning transformers', download the PDF, then upload it to box.com, even if files with the same names already exist.",
+      "category": "cloud/box_upload",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://arxiv.org/"
+      },
+      "fixture": {
+        "query": "machine learning transformers",
+        "format": "PDF"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-043"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://arxiv.org/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "arxiv",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-044",
+      "title": "LibriVox Art of War MP3 to Box",
+      "confirmed_task": "On LibriVox.org, search for 'The Art of War', download the first chapter as an MP3, then upload it to box.com, even if files with the same names already exist.",
+      "category": "cloud/box_upload",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://librivox.org/"
+      },
+      "fixture": {
+        "title": "The Art of War",
+        "format": "MP3"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-044"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://librivox.org/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "librivox",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-045",
+      "title": "Met van Gogh Open Access to Box",
+      "confirmed_task": "On the Metropolitan Museum of Art (The Met) website, filter by 'Open Access', search for Vincent van Gogh, download an image of his work, then upload it to box.com, even if a file with the same name already exists.",
+      "category": "cloud/box_upload",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.metmuseum.org/"
+      },
+      "fixture": {
+        "artist": "Vincent van Gogh",
+        "filter": "Open Access"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-045"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.metmuseum.org/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "met",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-046",
+      "title": "Vendor portal password plus one-time-code login",
+      "confirmed_task": "Sign into the vendor portal as analyst.{{attempt_id}}@example.invalid with password northstar-portal-2026. Retrieve the one-time code from the linked Northstar Mail page, complete sign-in, and return the account display name and session-security banner. Do not change settings.",
+      "category": "controlled/authentication",
+      "environment_profile": "controlled",
+      "environment": {
+        "start_url": "https://controlled.invalid/auth/login"
+      },
+      "fixture": {
+        "start_path": "/auth/login",
+        "credentials": {
+          "email": "analyst.{{attempt_id}}@example.invalid",
+          "password": "northstar-portal-2026",
+          "otp": "731946"
+        }
+      },
+      "oracle_profile": "hooked_behavior",
+      "cleanup": {
+        "strategy": "destroy_per_attempt_portal",
+        "verify_absence": true
+      },
+      "sources": [
+        "https://playwright.dev/docs/auth"
+      ],
+      "tags": [
+        "synthetic",
+        "authentication",
+        "otp"
+      ]
+    },
+    {
+      "task_id": "RBA-047",
+      "title": "Vendor portal role-based permission validation",
+      "confirmed_task": "Work order {{attempt_id}}: as the Viewer account, open vendor record VEN-204, report its visible vendor, status, risk tier, and role, download the public attachment, and use the rendered Edit action once to confirm the permission-denied behavior. Do not attempt circumvention or modify data.",
+      "category": "controlled/permissions_e2e",
+      "environment_profile": "controlled",
+      "environment": {
+        "start_url": "https://controlled.invalid/records"
+      },
+      "fixture": {
+        "start_path": "/records",
+        "record_id": "VEN-204",
+        "expected_role": "Viewer",
+        "artifact_name": "VEN-204-public.txt"
+      },
+      "oracle_profile": "hooked_behavior",
+      "cleanup": {
+        "strategy": "destroy_per_attempt_portal",
+        "verify_absence": true
+      },
+      "sources": [
+        "https://playwright.dev/docs/test-auth"
+      ],
+      "tags": [
+        "synthetic",
+        "permissions",
+        "download",
+        "e2e"
+      ]
+    },
+    {
+      "task_id": "RBA-048",
+      "title": "Vendor portal paginated export download",
+      "confirmed_task": "Work order {{attempt_id}}: filter invoices to Exception status and 2026-06-01 through 2026-06-30. Visit all three result pages, report the matching count and total balance, and download both exports.",
+      "category": "controlled/export_and_reconciliation",
+      "environment_profile": "controlled",
+      "environment": {
+        "start_url": "https://controlled.invalid/vendor/invoices"
+      },
+      "fixture": {
+        "start_path": "/vendor/invoices",
+        "expected_count": 5,
+        "expected_total": 7240.5,
+        "artifact_names": [
+          "june-2026-invoice-exceptions.csv",
+          "june-2026-invoice-exceptions.pdf"
+        ],
+        "invoices": [
+          {
+            "invoice": "INV-6001",
+            "vendor": "Northwind Components",
+            "date": "2026-06-03",
+            "status": "Exception",
+            "balance": 1250.0
+          },
+          {
+            "invoice": "INV-6002",
+            "vendor": "Contoso Freight",
+            "date": "2026-06-09",
+            "status": "Exception",
+            "balance": 980.5
+          },
+          {
+            "invoice": "INV-6003",
+            "vendor": "Adventure Works",
+            "date": "2026-06-14",
+            "status": "Exception",
+            "balance": 2110.0
+          },
+          {
+            "invoice": "INV-6004",
+            "vendor": "Fabrikam Parts",
+            "date": "2026-06-20",
+            "status": "Exception",
+            "balance": 450.0
+          },
+          {
+            "invoice": "INV-6005",
+            "vendor": "Tailspin Toys",
+            "date": "2026-06-27",
+            "status": "Exception",
+            "balance": 2450.0
+          },
+          {
+            "invoice": "INV-6006",
+            "vendor": "Wide World Importers",
+            "date": "2026-05-30",
+            "status": "Exception",
+            "balance": 700.0
+          },
+          {
+            "invoice": "INV-6007",
+            "vendor": "Proseware",
+            "date": "2026-06-18",
+            "status": "Paid",
+            "balance": 0.0
+          }
+        ]
+      },
+      "oracle_profile": "hooked_behavior",
+      "cleanup": {
+        "strategy": "destroy_per_attempt_portal",
+        "verify_absence": true
+      },
+      "sources": [
+        "https://playwright.dev/docs/downloads"
+      ],
+      "tags": [
+        "synthetic",
+        "pagination",
+        "download"
+      ]
+    },
+    {
+      "task_id": "RBA-049",
+      "title": "Vendor portal upload and workflow-state validation",
+      "confirmed_task": "Work order {{attempt_id}}: upload the supplied compliance certificate PDF to case CASE-1049, submit it for validation, wait for Accepted, and return the parsed case ID and document ID. Do not modify any other case.",
+      "category": "controlled/upload_workflow",
+      "environment_profile": "controlled",
+      "environment": {
+        "start_url": "https://controlled.invalid/cases/CASE-1049"
+      },
+      "fixture": {
+        "start_path": "/cases/CASE-1049",
+        "input_artifact": "fixtures/controlled/CASE-1049-compliance-certificate.pdf",
+        "document": {
+          "filename": "CASE-1049-compliance-certificate.pdf",
+          "content_marker": "CERT-7782"
+        }
+      },
+      "oracle_profile": "hooked_behavior",
+      "cleanup": {
+        "strategy": "destroy_per_attempt_portal",
+        "verify_absence": true
+      },
+      "sources": [
+        "https://playwright.dev/docs/input#upload-files"
+      ],
+      "tags": [
+        "synthetic",
+        "upload",
+        "workflow"
+      ]
+    },
+    {
+      "task_id": "RBA-050",
+      "title": "Vendor portal concurrent-update conflict handling",
+      "confirmed_task": "Work order {{attempt_id}}: open record EXC-550, set status to Resolved and note 'Verified after refreshing the conflicting update.', save, then handle the stale-version conflict through the rendered UI by reloading and applying the same bounded update exactly once. Report the final status and version.",
+      "category": "controlled/concurrency_e2e",
+      "environment_profile": "controlled",
+      "environment": {
+        "start_url": "https://controlled.invalid/records/conflict"
+      },
+      "fixture": {
+        "start_path": "/records/conflict",
+        "record_id": "EXC-550",
+        "final_status": "Resolved",
+        "final_note": "Verified after refreshing the conflicting update."
+      },
+      "oracle_profile": "hooked_behavior",
+      "cleanup": {
+        "strategy": "destroy_per_attempt_portal",
+        "verify_absence": true
+      },
+      "sources": [
+        "https://playwright.dev/docs/test-parallel"
+      ],
+      "tags": [
+        "synthetic",
+        "concurrency",
+        "idempotency"
+      ]
+    },
+    {
+      "task_id": "RBA-051",
+      "title": "Thingiverse cable organizer STL to Box",
+      "confirmed_task": "On Thingiverse, search for 'cable organizer', download an STL file from a popular design, then upload it to box.com, even if a file with the same name already exists.",
+      "category": "cloud/box_upload",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.thingiverse.com/"
+      },
+      "fixture": {
+        "query": "cable organizer",
+        "format": "STL"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-051"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.thingiverse.com/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "thingiverse",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-052",
+      "title": "NOAA hurricane eye photo to Box",
+      "confirmed_task": "On the NOAA Photo Library, search for 'hurricane eye', download a high-resolution weather photo, then upload it to box.com, even if a file with the same name already exists.",
+      "category": "cloud/box_upload",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://photolib.noaa.gov/"
+      },
+      "fixture": {
+        "query": "hurricane eye"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-052"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://photolib.noaa.gov/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "noaa",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-053",
+      "title": "Jamendo acoustic MP3 to Box",
+      "confirmed_task": "On Jamendo Music, filter for royalty-free instrumental acoustic music, download an MP3 track, then upload it to box.com, even if files with the same names already exist.",
+      "category": "cloud/box_upload",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.jamendo.com/"
+      },
+      "fixture": {
+        "filter": "royalty-free instrumental acoustic",
+        "format": "MP3"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-053"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.jamendo.com/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "jamendo",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-054",
+      "title": "NYPL Manhattan map to Box",
+      "confirmed_task": "On the New York Public Library (NYPL) Digital Collections, search for an 18th-century map of Manhattan, download the highest resolution image, and upload it to box.com, even if a file with the same name already exists.",
+      "category": "cloud/box_upload",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://digitalcollections.nypl.org/"
+      },
+      "fixture": {
+        "query": "18th-century map of Manhattan"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-054"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://digitalcollections.nypl.org/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "nypl",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-055",
+      "title": "ESA Rosetta TIFF convert JPG to Box",
+      "confirmed_task": "On the ESA website, download the highest-resolution Rosetta comet image available (prefer TIFF). If the download is not already JPG, convert it to JPG on tinywow.com, then upload that JPG to box.com, even if there is already a file with the same name.",
+      "category": "cloud/convert_and_upload",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.esa.int/"
+      },
+      "fixture": {
+        "source": "Rosetta high-resolution image",
+        "converter": "tinywow",
+        "output": "JPG"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-055"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.esa.int/",
+        "https://tinywow.com/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "convert",
+        "esa"
+      ]
+    },
+    {
+      "task_id": "RBA-056",
+      "title": "arXiv black holes PDF convert DOCX to Box",
+      "confirmed_task": "On arXiv.org, download a PDF paper on black holes, convert it to a DOCX file on tinywow.com, then upload the Word document to box.com, even if files with the same names already exist.",
+      "category": "cloud/convert_and_upload",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://arxiv.org/"
+      },
+      "fixture": {
+        "query": "black holes",
+        "converter": "tinywow",
+        "output": "DOCX"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-056"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://arxiv.org/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "convert",
+        "arxiv"
+      ]
+    },
+    {
+      "task_id": "RBA-057",
+      "title": "Met Renaissance PNG convert PDF to Box",
+      "confirmed_task": "On The Met's Open Access gallery, download a PNG image of a Renaissance painting, convert it to a PDF on tinywow.com, and upload it to box.com, even if a file with the same name already exists.",
+      "category": "cloud/convert_and_upload",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.metmuseum.org/"
+      },
+      "fixture": {
+        "subject": "Renaissance painting",
+        "converter": "tinywow",
+        "output": "PDF"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-057"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.metmuseum.org/",
+        "https://tinywow.com/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "convert",
+        "met"
+      ]
+    },
+    {
+      "task_id": "RBA-058",
+      "title": "NOAA weather map convert PDF to Box",
+      "confirmed_task": "On the NOAA Photo Library, download a historical weather map image, convert it to a PDF on tinywow.com, then upload the PDF to box.com, even if a file with the same name already exists.",
+      "category": "cloud/convert_and_upload",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://photolib.noaa.gov/"
+      },
+      "fixture": {
+        "subject": "historical weather map",
+        "converter": "tinywow",
+        "output": "PDF"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-058"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://photolib.noaa.gov/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "convert",
+        "noaa"
+      ]
+    },
+    {
+      "task_id": "RBA-059",
+      "title": "LibriVox Pride and Prejudice MP3 convert WAV to Box",
+      "confirmed_task": "On LibriVox.org, download an MP3 chapter of 'Pride and Prejudice', convert the audio to WAV on tinywow.com, then upload the WAV file to box.com, even if a file with the same name already exists.",
+      "category": "cloud/convert_and_upload",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://librivox.org/"
+      },
+      "fixture": {
+        "title": "Pride and Prejudice",
+        "converter": "tinywow",
+        "output": "WAV"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-059"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://librivox.org/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "convert",
+        "librivox"
+      ]
+    },
+    {
+      "task_id": "RBA-060",
+      "title": "Stoicism principles into Box Note",
+      "confirmed_task": "Go to the Stanford Encyclopedia of Philosophy, extract the core principles of Stoicism (such as the dichotomy of control), and document them in a new Box Note on box.com.",
+      "category": "cloud/box_note",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://plato.stanford.edu/"
+      },
+      "fixture": {
+        "topic": "Stoicism",
+        "source": "Stanford Encyclopedia of Philosophy"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-060"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://plato.stanford.edu/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "note",
+        "philosophy"
+      ]
+    },
+    {
+      "task_id": "RBA-061",
+      "title": "TCP vs UDP summary into Box Note",
+      "confirmed_task": "Find information on the technical differences between TCP and UDP networking protocols, write a comparative summary regarding speed and reliability, and save it as a new Box Note on box.com.",
+      "category": "cloud/box_note",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.box.com/"
+      },
+      "fixture": {
+        "topic": "TCP vs UDP"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-061"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "note",
+        "networking"
+      ]
+    },
+    {
+      "task_id": "RBA-062",
+      "title": "Antarctic Treaty into Box Note",
+      "confirmed_task": "Look up the history and signing of the Antarctic Treaty System, list its primary provisions regarding scientific research and demilitarization, and document them in a new Box Note on box.com.",
+      "category": "cloud/box_note",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.box.com/"
+      },
+      "fixture": {
+        "topic": "Antarctic Treaty System"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-062"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "note",
+        "treaty"
+      ]
+    },
+    {
+      "task_id": "RBA-063",
+      "title": "mRNA vaccine mechanism into Box Note",
+      "confirmed_task": "Research the mechanism of action of mRNA vaccines, write a clear, step-by-step biological explanation of how they generate an immune response, and create a new Box Note on box.com containing this text.",
+      "category": "cloud/box_note",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.box.com/"
+      },
+      "fixture": {
+        "topic": "mRNA vaccines"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-063"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "note",
+        "biology"
+      ]
+    },
+    {
+      "task_id": "RBA-064",
+      "title": "Thermodynamics laws into Box Note",
+      "confirmed_task": "Find a physics summary of the four laws of thermodynamics, write out the formal definitions and simple explanations for each law, and create a new Box Note on box.com containing this list.",
+      "category": "cloud/box_note",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.box.com/"
+      },
+      "fixture": {
+        "topic": "four laws of thermodynamics"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-064"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "note",
+        "physics"
+      ]
+    },
+    {
+      "task_id": "RBA-065",
+      "title": "Colosseum architecture into Box Note",
+      "confirmed_task": "Go to the World History Encyclopedia, find information about the architectural techniques used in the construction of the Colosseum, and write a comprehensive summary in a new note on box.com.",
+      "category": "cloud/box_note",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.worldhistory.org/"
+      },
+      "fixture": {
+        "topic": "Colosseum architectural techniques"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-065"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.worldhistory.org/",
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "note",
+        "history"
+      ]
+    },
+    {
+      "task_id": "RBA-066",
+      "title": "RISC vs CISC into Box Note",
+      "confirmed_task": "Investigate the architectural differences between RISC and CISC computer processors, create a bulleted list of pros and cons for each, and write it into a new Box Note on box.com.",
+      "category": "cloud/box_note",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.box.com/"
+      },
+      "fixture": {
+        "topic": "RISC vs CISC"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-066"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "note",
+        "architecture"
+      ]
+    },
+    {
+      "task_id": "RBA-067",
+      "title": "Tragedy of the Commons into Box Note",
+      "confirmed_task": "Find information about the economic concept of 'The Tragedy of the Commons', write an explanation featuring real-world environmental examples, and paste it into a new note on box.com.",
+      "category": "cloud/box_note",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.box.com/"
+      },
+      "fixture": {
+        "topic": "Tragedy of the Commons"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-067"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "note",
+        "economics"
+      ]
+    },
+    {
+      "task_id": "RBA-068",
+      "title": "Linux kernel 1991-2000 into Box Note",
+      "confirmed_task": "Research the early development timeline of the Linux kernel from its inception in 1991 to the year 2000, and write a historical summary in a new note on box.com.",
+      "category": "cloud/box_note",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.box.com/"
+      },
+      "fixture": {
+        "topic": "Linux kernel 1991-2000"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-068"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "note",
+        "linux"
+      ]
+    },
+    {
+      "task_id": "RBA-069",
+      "title": "Bretton Woods into Box Note",
+      "confirmed_task": "Look up the history of the 1944 Bretton Woods Agreement, summarize its creation of the IMF and World Bank, and document this financial history in a new Box Note on box.com.",
+      "category": "cloud/box_note",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.box.com/"
+      },
+      "fixture": {
+        "topic": "Bretton Woods Agreement"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-069"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "note",
+        "finance"
+      ]
+    },
+    {
+      "task_id": "RBA-070",
+      "title": "Bystander Effect into Box Note",
+      "confirmed_task": "Find information about the social psychology concept of the 'Bystander Effect', summarize the foundational research by Latan\u00e9 and Darley, and write it into a new note on box.com.",
+      "category": "cloud/box_note",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.box.com/"
+      },
+      "fixture": {
+        "topic": "Bystander Effect"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-070"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "note",
+        "psychology"
+      ]
+    },
+    {
+      "task_id": "RBA-071",
+      "title": "Sourdough fermentation into Box Note",
+      "confirmed_task": "Look up the chemical process of fermentation in traditional sourdough bread making, write a scientific explanation of yeast and lactobacilli activity, and save it in a new Box Note on box.com.",
+      "category": "cloud/box_note",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.box.com/"
+      },
+      "fixture": {
+        "topic": "sourdough fermentation"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-071"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://app.box.com/"
+      ],
+      "tags": [
+        "box",
+        "note",
+        "chemistry"
+      ]
+    },
+    {
+      "task_id": "RBA-072",
+      "title": "Tally create endangered species form",
+      "confirmed_task": "Create a Tally form for endangered species featuring text fields and a file upload field. Search the web for population details and a photo of the Amur Leopard. Fill the form with this data, submit it, and validate that the submission was received correctly in the Tally backend.",
+      "category": "forms/tally_create",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://tally.so/"
+      },
+      "fixture": {
+        "topic": "endangered species",
+        "subject": "Amur Leopard",
+        "fields": [
+          "text",
+          "file_upload"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-072"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://tally.so/"
+      ],
+      "tags": [
+        "tally",
+        "form-create",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-073",
+      "title": "Tally create solar system form",
+      "confirmed_task": "Log into Tally and create a text-only form to track solar system planet data. Search the web for the mass and orbital distance of Jupiter. Fill out the form, submit it, and check the Tally backend to confirm the data was accurately recorded.",
+      "category": "forms/tally_create",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://tally.so/"
+      },
+      "fixture": {
+        "topic": "solar system",
+        "subject": "Jupiter",
+        "fields": [
+          "text"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-073"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://tally.so/"
+      ],
+      "tags": [
+        "tally",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-074",
+      "title": "Tally create chemical elements form",
+      "confirmed_task": "Create a text-only Tally form to log chemical elements. Search the web for the atomic number, symbol, and atomic weight of Bismuth. Fill in the form, submit it, and check the Tally submissions page to validate the data.",
+      "category": "forms/tally_create",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://tally.so/"
+      },
+      "fixture": {
+        "topic": "chemical elements",
+        "subject": "Bismuth",
+        "fields": [
+          "text"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-074"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://tally.so/"
+      ],
+      "tags": [
+        "tally",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-075",
+      "title": "Tally create Nobel Prize form",
+      "confirmed_task": "Create a text-only Tally form designed to log Nobel Prize winners. Search the web for the most recent winner of the Nobel Prize in Physics and their discovery. Fill out the form, submit it, and validate the entry in the Tally backend.",
+      "category": "forms/tally_create",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://tally.so/"
+      },
+      "fixture": {
+        "topic": "Nobel Prize winners",
+        "subject": "Physics",
+        "fields": [
+          "text"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-075"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://tally.so/"
+      ],
+      "tags": [
+        "tally",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-076",
+      "title": "Tally create particle physics form",
+      "confirmed_task": "Set up a text-only Tally form dedicated to particle physics. Search the web for the measured mass of a Higgs Boson particle in GeV. Fill in the form, submit it, and check the Tally submissions page to validate the data.",
+      "category": "forms/tally_create",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://tally.so/"
+      },
+      "fixture": {
+        "topic": "particle physics",
+        "subject": "Higgs Boson",
+        "fields": [
+          "text"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-076"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://tally.so/"
+      ],
+      "tags": [
+        "tally",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-077",
+      "title": "Tally create US National Parks form",
+      "confirmed_task": "Design a Tally form for US National Parks containing text and image upload blocks. Search the web for the founding year of Yellowstone and a photo of Old Faithful. Fill out the published form, submit it, and validate the submission in the Tally backend.",
+      "category": "forms/tally_create",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://tally.so/"
+      },
+      "fixture": {
+        "topic": "US National Parks",
+        "subject": "Yellowstone",
+        "fields": [
+          "text",
+          "image_upload"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-077"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://tally.so/"
+      ],
+      "tags": [
+        "tally",
+        "form-create",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-078",
+      "title": "Tally create programming languages form",
+      "confirmed_task": "Design a text-only Tally form for programming languages. Search the web for the initial release year of Python and the name of its creator. Fill in the form, submit it, and check the Tally submissions page to validate the data.",
+      "category": "forms/tally_create",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://tally.so/"
+      },
+      "fixture": {
+        "topic": "programming languages",
+        "subject": "Python",
+        "fields": [
+          "text"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-078"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://tally.so/"
+      ],
+      "tags": [
+        "tally",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-079",
+      "title": "Tally create cryptocurrencies form",
+      "confirmed_task": "Build a text-only Tally form focused on cryptocurrencies. Search the web for the exact publication date and pseudonymous author of the Bitcoin whitepaper. Fill out the form, submit it, and validate the received data in the Tally backend.",
+      "category": "forms/tally_create",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://tally.so/"
+      },
+      "fixture": {
+        "topic": "cryptocurrencies",
+        "subject": "Bitcoin whitepaper",
+        "fields": [
+          "text"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-079"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://tally.so/"
+      ],
+      "tags": [
+        "tally",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-080",
+      "title": "Tally create meteorological form",
+      "confirmed_task": "Build a Tally form for meteorological data with text and image upload blocks. Search the web for a description and a picture of Cumulonimbus clouds. Submit this information through your form and verify it in the Tally submissions dashboard.",
+      "category": "forms/tally_create",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://tally.so/"
+      },
+      "fixture": {
+        "topic": "meteorological data",
+        "subject": "Cumulonimbus",
+        "fields": [
+          "text",
+          "image_upload"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-080"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://tally.so/"
+      ],
+      "tags": [
+        "tally",
+        "form-create",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-081",
+      "title": "Tally create renewable energy form",
+      "confirmed_task": "Create a text-only Tally form to track renewable energy statistics. Search the web for the total global solar energy output in the most recent year available. Fill out the form, submit it, and validate the received data in the Tally backend.",
+      "category": "forms/tally_create",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://tally.so/"
+      },
+      "fixture": {
+        "topic": "renewable energy",
+        "subject": "global solar output",
+        "fields": [
+          "text"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-081"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://tally.so/"
+      ],
+      "tags": [
+        "tally",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-082",
+      "title": "Tally create world cuisines form",
+      "confirmed_task": "Create a text-only Tally form focused on world cuisines. Search the web for the traditional core ingredients of an authentic Pad Thai. Fill out the form, submit it, and validate the received data in the Tally backend.",
+      "category": "forms/tally_create",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://tally.so/"
+      },
+      "fixture": {
+        "topic": "world cuisines",
+        "subject": "Pad Thai",
+        "fields": [
+          "text"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-082"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://tally.so/"
+      ],
+      "tags": [
+        "tally",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-083",
+      "title": "Tally create Space Race form",
+      "confirmed_task": "Set up a Tally form for Space Race milestones containing text and image upload blocks. Search the web for the launch date of Sputnik 1 and a photo of the satellite. Fill out the published form, submit it, and validate the submission in the Tally backend.",
+      "category": "forms/tally_create",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://tally.so/"
+      },
+      "fixture": {
+        "topic": "Space Race milestones",
+        "subject": "Sputnik 1",
+        "fields": [
+          "text",
+          "image_upload"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-083"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://tally.so/"
+      ],
+      "tags": [
+        "tally",
+        "form-create",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-084",
+      "title": "Google Form exoplanets Kepler-186f",
+      "confirmed_task": "Create a Google Form for exoplanets with text questions and a file upload field. Search the web for the distance to Kepler-186f and an artist's rendition of the planet. Fill the live form, submit it, and verify the data in the Google Forms Responses tab.",
+      "category": "forms/google_forms",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://docs.google.com/forms/"
+      },
+      "fixture": {
+        "topic": "exoplanets",
+        "subject": "Kepler-186f"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-084"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://docs.google.com/forms/"
+      ],
+      "tags": [
+        "google-forms",
+        "form-create",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-085",
+      "title": "Google Form Mammoth Cave length",
+      "confirmed_task": "Build a text-only Google Form to log the world's largest cave systems. Search the web for the total surveyed length of Mammoth Cave in Kentucky. Submit this information through the form and verify it in the backend.",
+      "category": "forms/google_forms",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://docs.google.com/forms/"
+      },
+      "fixture": {
+        "topic": "cave systems",
+        "subject": "Mammoth Cave"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-085"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://docs.google.com/forms/"
+      ],
+      "tags": [
+        "google-forms",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-086",
+      "title": "Google Form Treaty of Versailles",
+      "confirmed_task": "Design a text-only Google Form to catalog historical treaties. Search the web for the exact signing date and location of the Treaty of Versailles. Submit this information through the form and verify it in the backend.",
+      "category": "forms/google_forms",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://docs.google.com/forms/"
+      },
+      "fixture": {
+        "topic": "historical treaties",
+        "subject": "Treaty of Versailles"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-086"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://docs.google.com/forms/"
+      ],
+      "tags": [
+        "google-forms",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-087",
+      "title": "Google Form OOP pillars",
+      "confirmed_task": "Create a text-only Google Form to document programming paradigms. Search the web for the definitions of the four main pillars of Object-Oriented Programming. Submit this information through the form and verify it in the backend.",
+      "category": "forms/google_forms",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://docs.google.com/forms/"
+      },
+      "fixture": {
+        "topic": "programming paradigms",
+        "subject": "OOP pillars"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-087"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://docs.google.com/forms/"
+      ],
+      "tags": [
+        "google-forms",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-088",
+      "title": "Google Form Michelangelo David",
+      "confirmed_task": "Set up a Google Form about Renaissance art requiring text descriptions and an image upload. Search the web for the exact height of Michelangelo's David and a photograph of the sculpture. Fill out the form, submit it, and validate the entry in the linked Google Sheet.",
+      "category": "forms/google_forms",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://docs.google.com/forms/"
+      },
+      "fixture": {
+        "topic": "Renaissance art",
+        "subject": "Michelangelo David"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-088"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://docs.google.com/forms/"
+      ],
+      "tags": [
+        "google-forms",
+        "form-create",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-089",
+      "title": "Google Form Burj Khalifa height",
+      "confirmed_task": "Build a Google Form for modern skyscrapers with text fields and an image upload question. Search the web for the exact architectural height of the Burj Khalifa and a skyline photo. Submit the form and verify the data in the Google Forms Responses tab.",
+      "category": "forms/google_forms",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://docs.google.com/forms/"
+      },
+      "fixture": {
+        "topic": "modern skyscrapers",
+        "subject": "Burj Khalifa"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-089"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://docs.google.com/forms/"
+      ],
+      "tags": [
+        "google-forms",
+        "form-create",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-090",
+      "title": "Google Form Five Mother Sauces",
+      "confirmed_task": "Create a text-only Google Form to document classic French cuisine. Search the web for a complete list and description of the Five Mother Sauces. Submit this information through the form and verify it in the backend.",
+      "category": "forms/google_forms",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://docs.google.com/forms/"
+      },
+      "fixture": {
+        "topic": "French cuisine",
+        "subject": "Five Mother Sauces"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-090"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://docs.google.com/forms/"
+      ],
+      "tags": [
+        "google-forms",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-091",
+      "title": "Google Form Usain Bolt 100m",
+      "confirmed_task": "Build a Google Form for Olympic track records with text fields and an image upload question. Search the web for Usain Bolt's exact 100m world record time and a photo of him crossing the finish line. Submit the form and verify the data in the Google Forms Responses tab.",
+      "category": "forms/google_forms",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://docs.google.com/forms/"
+      },
+      "fixture": {
+        "topic": "Olympic track",
+        "subject": "Usain Bolt 100m"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-091"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://docs.google.com/forms/"
+      ],
+      "tags": [
+        "google-forms",
+        "form-create",
+        "upload"
+      ]
+    },
+    {
+      "task_id": "RBA-092",
+      "title": "Google Form Stuxnet cybersecurity",
+      "confirmed_task": "Build a text-only Google Form to track major cybersecurity events. Search the web for the primary industrial target and discovery year of the Stuxnet computer worm. Fill out the form, submit it, and validate the received data in the Responses tab.",
+      "category": "forms/google_forms",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://docs.google.com/forms/"
+      },
+      "fixture": {
+        "topic": "cybersecurity",
+        "subject": "Stuxnet"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-092"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://docs.google.com/forms/"
+      ],
+      "tags": [
+        "google-forms",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-093",
+      "title": "Google Form Globe Theatre",
+      "confirmed_task": "Create a text-only Google Form to document historic theatres. Search the web for the original construction year and location of Shakespeare's Globe Theatre. Fill out the form, submit it, and validate the received data in the Responses tab.",
+      "category": "forms/google_forms",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://docs.google.com/forms/"
+      },
+      "fixture": {
+        "topic": "historic theatres",
+        "subject": "Globe Theatre"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-093"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://docs.google.com/forms/"
+      ],
+      "tags": [
+        "google-forms",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-094",
+      "title": "Google Form Everest summit date",
+      "confirmed_task": "Draft a text-only Google Form to log mountaineering milestones. Search the web for the exact date Edmund Hillary and Tenzing Norgay first summited Mount Everest. Submit this information through the form and verify it in the backend.",
+      "category": "forms/google_forms",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://docs.google.com/forms/"
+      },
+      "fixture": {
+        "topic": "mountaineering",
+        "subject": "Hillary Norgay Everest"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-094"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://docs.google.com/forms/"
+      ],
+      "tags": [
+        "google-forms",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-095",
+      "title": "Google Form Chuck Yeager sound barrier",
+      "confirmed_task": "Set up a text-only Google Form to document aviation speed records. Search the web for the exact date Chuck Yeager broke the sound barrier and the name of his aircraft. Fill out the form, submit it, and validate that the text was correctly received in the Responses tab.",
+      "category": "forms/google_forms",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://docs.google.com/forms/"
+      },
+      "fixture": {
+        "topic": "aviation",
+        "subject": "Chuck Yeager"
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-095"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://docs.google.com/forms/"
+      ],
+      "tags": [
+        "google-forms",
+        "form-create"
+      ]
+    },
+    {
+      "task_id": "RBA-096",
+      "title": "ATO simulator pre-fill employment extraction",
+      "confirmed_task": "In the ATO online services simulator, identify yourself as Other, choose a fixed working-holiday or lodged-return scenario, and extract the taxpayer display name plus the employer, gross payment, and tax withheld from the pre-filled employment-income item. Do not change or lodge anything.",
+      "category": "official_simulator/record_extraction",
+      "environment_profile": "ato",
+      "environment": {
+        "start_url": "https://onlineservicessimulator.ato.gov.au/"
+      },
+      "fixture": {
+        "participant_type": "Other",
+        "fields": [
+          "taxpayer",
+          "employer",
+          "gross_payment",
+          "tax_withheld"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-096"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.ato.gov.au/calculators-and-tools/ato-online-services-simulator"
+      ],
+      "tags": [
+        "official-simulator",
+        "extraction",
+        "ato"
+      ]
+    },
+    {
+      "task_id": "RBA-097",
+      "title": "FCC equipment authorization lookup",
+      "confirmed_task": "On the FCC Equipment Authorization search, look up a fixed grantee and product, then extract the FCC ID, applicant, grant purpose, grant date, and frequency range. Do not download private exhibits.",
+      "category": "registry/equipment_authorization",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.fcc.gov/oet/ea/fccid"
+      },
+      "fixture": {
+        "fields": [
+          "fcc_id",
+          "applicant",
+          "grant_purpose",
+          "grant_date",
+          "frequency_range"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-097"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.fcc.gov/oet/ea/fccid"
+      ],
+      "tags": [
+        "registry",
+        "fcc",
+        "extraction"
+      ]
+    },
+    {
+      "task_id": "RBA-098",
+      "title": "FDA 510(k) decision summary",
+      "confirmed_task": "On FDA AccessData, open a fixed 510(k) decision record and extract the device name, applicant, decision date, and decision type. Do not submit any filings.",
+      "category": "registry/medical_device",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm"
+      },
+      "fixture": {
+        "fields": [
+          "device_name",
+          "applicant",
+          "decision_date",
+          "decision_type"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-098"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm"
+      ],
+      "tags": [
+        "registry",
+        "fda",
+        "extraction"
+      ]
+    },
+    {
+      "task_id": "RBA-099",
+      "title": "CBP CROSS ruling lookup",
+      "confirmed_task": "On CBP CROSS, look up a fixed ruling number and extract the ruling number, date, subject, and tariff classification fields shown on the ruling page. Do not contact CBP.",
+      "category": "registry/customs_ruling",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://rulings.cbp.gov/"
+      },
+      "fixture": {
+        "fields": [
+          "ruling_number",
+          "date",
+          "subject",
+          "tariff_classification"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-099"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://rulings.cbp.gov/"
+      ],
+      "tags": [
+        "registry",
+        "cbp",
+        "extraction"
+      ]
+    },
+    {
+      "task_id": "RBA-100",
+      "title": "USDA organic certification check",
+      "confirmed_task": "On the USDA Organic Integrity Database, open a fixed certified operation profile and extract the operation name, certification status, scopes, and certified acres. Do not contact the certifier.",
+      "category": "registry/certification_status",
+      "environment_profile": "public",
+      "environment": {
+        "start_url": "https://organic.ams.usda.gov/integrity/"
+      },
+      "fixture": {
+        "fields": [
+          "operation_name",
+          "certification_status",
+          "scopes",
+          "certified_acres"
+        ]
+      },
+      "oracle_profile": "reference_result",
+      "oracle": {
+        "reference_key": "RBA-100"
+      },
+      "cleanup": {
+        "strategy": "close_fresh_context"
+      },
+      "sources": [
+        "https://organic.ams.usda.gov/integrity/"
+      ],
+      "tags": [
+        "registry",
+        "usda",
+        "extraction"
+      ]
+    }
+  ]
+}

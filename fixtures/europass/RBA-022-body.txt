@@ -1,0 +1,5 @@
+I am applying for the Research Software Engineer role because the laboratory's work on reproducible mobility research closely matches my experience building open data tools.
+
+At the fictional Civic Systems Unit, I designed tested Python data pipelines, maintained browser-based quality checks, and helped researchers publish documented datasets. I value clear interfaces, careful validation, and software that others can reproduce.
+
+I would welcome the opportunity to discuss how this experience could support Open Mobility Lab's research engineering practice.

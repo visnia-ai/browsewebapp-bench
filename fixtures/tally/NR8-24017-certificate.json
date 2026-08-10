@@ -1,0 +1,10 @@
+{
+  "certificate_id": "CERT-ES-011-2026",
+  "asset": "Nimbus Router NR-8",
+  "serial_number": "NR8-24017",
+  "classification": "Electrical safety",
+  "issuer": "Northstar Test Labs",
+  "issue_date": "2026-07-15",
+  "expiry_date": "2027-07-14",
+  "result": "PASS"
+}

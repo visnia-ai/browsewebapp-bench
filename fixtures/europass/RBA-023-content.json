@@ -1,0 +1,28 @@
+{
+  "name": "Ana-Maria Popescu",
+  "headline": "Ingénieure logiciel",
+  "contact": {
+    "email": "ana-maria.popescu@example.invalid",
+    "city": "Cluj-Napoca",
+    "country": "Roumanie"
+  },
+  "experience": [
+    {
+      "role": "Ingénieure logiciel",
+      "organization": "Atelier Numérique Test",
+      "start": "2022-09",
+      "end": "présent",
+      "description": "Développement d'interfaces web accessibles et de services GraphQL testés."
+    }
+  ],
+  "education": [
+    {
+      "qualification": "Master en informatique",
+      "organization": "Universitatea Babeș-Bolyai",
+      "start": "2020",
+      "end": "2022"
+    }
+  ],
+  "skills": ["TypeScript", "GraphQL", "tests d'accessibilité"],
+  "languages": ["roumain - langue maternelle", "français - C1", "anglais - C1"]
+}

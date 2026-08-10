@@ -1,0 +1,12 @@
+{
+  "vendor": "Northwind Office Supplies",
+  "invoice_number": "NWO-2026-0714",
+  "invoice_date": "2026-07-14",
+  "purchase_order": "PO-OPS-0714",
+  "bill_to": "Northstar Operations",
+  "currency": "USD",
+  "payment_due": "2026-08-13",
+  "subtotal": "818.00",
+  "tax": "65.44",
+  "total": "883.44"
+}

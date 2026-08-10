@@ -1,0 +1,28 @@
+[project]
+name = "browser-bench"
+version = "0.1.0"
+description = "A 39-task benchmark for real-world browser workflows"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "Visnia"}]
+dependencies = ["browser-agent-python-sdk", "PyYAML>=6.0,<7"]
+
+[project.optional-dependencies]
+browser-use = ["browser-use>=0.11.5,<0.13", "python-dotenv>=1.0"]
+pdf = ["reportlab>=4.0", "pdfplumber>=0.11", "pypdf>=5.0"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+rbbench = "rbbench.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rbbench"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
