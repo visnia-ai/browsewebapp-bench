@@ -133,11 +133,6 @@ Use `--browser-profile /path/to/chrome-user-data` to seed a logged-in Chrome
 profile into each attempt. Chrome must not be using that directory at the same
 time; the benchmark clones it into an isolated profile for each attempt.
 
-## Secrets
-
-Do not commit `.env`, `.runs/`, `session-pools/private/`, provider tokens, browser
-profiles, or result traces.
-
 ## License
 
-MIT. See `[LICENSE](LICENSE)`.
+MIT
