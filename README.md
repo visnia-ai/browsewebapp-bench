@@ -18,13 +18,17 @@ uses [Browser Agent](https://github.com/visnia-ai/browser-agent).
 
 ## Benchmark results
 
-| Metric               | Ours         | Browser-code |
-| -------------------- | ------------ | ------------ |
-| Model                | gpt-5.6-luna | gpt-5.6-luna |
-| Success              | **76%**      | 64%          |
-| Duration (seconds)   | **15,653**   | 32,036       |
-| Cost                 | **$3.73**    | $7.45        |
-| Successful tasks / $ | **18.77**    | 8.86         |
+
+| Metric               | [Browser Agent]([https://github.com/browser-use/browser-use](https://github.com/browser-use/browser-use)) | Browser-code |
+| -------------------- | --------------------------------------------------------------------------------------------------------- | ------------ |
+| Model                | gpt-5.6-luna                                                                                              | gpt-5.6-luna |
+| Success              | **76%**                                                                                                   | 64%          |
+| Duration (seconds)   | **15,653**                                                                                                | 32,036       |
+| Cost                 | **$3.73**                                                                                                 | $7.45        |
+| Successful tasks / $ | **18.77**                                                                                                 | 8.86         |
+
+
+
 
 ## Install
 
@@ -35,6 +39,8 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -e .
 ```
+
+
 
 ## Run
 
@@ -49,6 +55,8 @@ Default judge configuration:
 - provider: `decart/fp4`, with fallback disabled
 - reasoning effort: `high`
 - evidence: text-only
+
+
 
 ### Browser Agent
 
@@ -79,8 +87,7 @@ rbbench run \
   --parallel <N>
 ```
 
-Encrypted site logins belong in the YAML as `auth_credentials` (`browser-agent
-generate-key` / `encrypt`). Plaintext YAML credentials are rejected by Browser
+Encrypted site logins belong in the YAML as `auth_credentials` (`browser-agent generate-key` / `encrypt`). Plaintext YAML credentials are rejected by Browser
 Agent. Prepare-hook session credentials still override YAML when present.
 
 For Codex-backed benchmarks, sign in once before starting the run:
@@ -89,6 +96,8 @@ For Codex-backed benchmarks, sign in once before starting the run:
 rbbench codex-login
 rbbench run --name <run-id> --provider codex --model <codex-model> --parallel <N>
 ```
+
+
 
 ### Bcode
 
@@ -112,6 +121,8 @@ rbbench run \
   --executor-command scripts/bcode_executor.py \
   --parallel <N>
 ```
+
+
 
 ## Misc
 
