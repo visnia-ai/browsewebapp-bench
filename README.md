@@ -19,7 +19,7 @@ uses [Browser Agent](https://github.com/visnia-ai/browser-agent).
 ## Benchmark results
 
 
-| Metric               | [Browser Agent]([https://github.com/browser-use/browser-use](https://github.com/browser-use/browser-use)) | Browser-code |
+| Metric               | [Browser Agent](https://github.com/browser-use/browser-use) | Browser-code |
 | -------------------- | --------------------------------------------------------------------------------------------------------- | ------------ |
 | Model                | gpt-5.6-luna                                                                                              | gpt-5.6-luna |
 | Success              | **76%**                                                                                                   | 64%          |
