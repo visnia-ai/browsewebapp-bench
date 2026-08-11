@@ -62,9 +62,10 @@ prepare, observe, and cleanup subprocesses. It is never added to `task.json`,
 
 Benchmark runs that include any `tally_public_form` task call
 `ensure_tally_forms` once at start. That verifies pinned IDs in
-`configs/tally/forms.json`, creates any missing forms (`REPLACE_*` placeholders or
-404s), and persists new IDs back to the config. Normal runs never rewrite form
-definitions for forms that already exist.
+`configs/tally/forms.json`, creates replacements for placeholders and forms that
+are missing or inaccessible to the configured token (401, 403, or 404), and
+persists each new ID back to the config. Normal runs never rewrite form definitions
+for forms that are accessible.
 
 The checked-in provisioner owns the complete form specification and deterministic
 block UUIDs. Use it only as an administrative operation after an intentional form

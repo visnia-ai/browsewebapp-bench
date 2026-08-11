@@ -132,6 +132,46 @@ class EnsureTallyFormsTests(unittest.TestCase):
             persisted = json.loads(config.read_text(encoding="utf-8"))
             self.assertEqual(persisted["forms"]["RBA-009"]["form_id"], "recreated-009")
 
+    def test_recreate_when_pinned_form_is_not_authorized(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            config = Path(temporary) / "forms.json"
+            config.write_text(
+                json.dumps(
+                    {
+                        "forms": {
+                            "RBA-009": {
+                                "form_id": "inaccessible-009",
+                                "name": "Operations service intake",
+                                "public_url": "https://tally.so/r/inaccessible-009",
+                            }
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            calls: list[str] = []
+
+            def request_fn(token, method, path, body=None):
+                calls.append(method)
+                if method == "GET":
+                    raise TallyApiError("GET", path, 401, "not authorized")
+                self.assertEqual(method, "POST")
+                return {"id": "replacement-009", "name": "Operations service intake"}
+
+            results = ensure_tally_forms(
+                ["RBA-009"],
+                config_path=config,
+                token="test-token",
+                request_fn=request_fn,
+            )
+
+            self.assertEqual(calls, ["GET", "POST"])
+            self.assertEqual(results["RBA-009"]["action"], "created")
+            persisted = json.loads(config.read_text(encoding="utf-8"))
+            self.assertEqual(
+                persisted["forms"]["RBA-009"]["form_id"], "replacement-009"
+            )
+
     def test_non_404_get_failure_raises(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             config = Path(temporary) / "forms.json"

@@ -19,6 +19,7 @@ DEFAULT_TOKEN_FILE = REPO_ROOT / "session-pools" / "private" / "tally-api-token"
 NAMESPACE = uuid.UUID("b539545c-a9f8-4e53-9d18-4b722102cf4b")
 
 RequestFn = Callable[[str, str, str, Any | None], dict[str, Any]]
+UNAVAILABLE_FORM_CODES = frozenset({401, 403, 404})
 
 
 class TallyApiError(InvalidEnvironmentError):
@@ -397,7 +398,7 @@ def ensure_tally_forms(
     token: str | None = None,
     request_fn: RequestFn | None = None,
 ) -> dict[str, Any]:
-    """Verify pinned Tally forms exist; create and persist any that are missing."""
+    """Verify pinned Tally forms are accessible; replace unavailable forms."""
 
     path = _config_path(config_path)
     resolved_token = _resolve_token(token)
@@ -419,6 +420,16 @@ def ensure_tally_forms(
     forms = config.setdefault("forms", {})
     results: dict[str, Any] = {}
     dirty = False
+
+    def persist() -> None:
+        nonlocal dirty
+        if not dirty:
+            return
+        config["forms"] = forms
+        config["provisioned_at"] = datetime.now(UTC).date().isoformat()
+        config.setdefault("schema_version", 1)
+        write_json(path, config)
+        dirty = False
 
     for task_id in selected:
         spec = specs[task_id]
@@ -443,7 +454,7 @@ def ensure_tally_forms(
                     spec if update_existing else None,
                 )
             except TallyApiError as exc:
-                if update_existing or exc.code != 404:
+                if exc.code not in UNAVAILABLE_FORM_CODES:
                     raise
                 needs_create = True
             else:
@@ -479,11 +490,9 @@ def ensure_tally_forms(
         forms[task_id] = entry
         dirty = True
         results[task_id] = {**entry, "action": "created"}
+        # Do not lose a successfully replaced ID if a later form check fails.
+        persist()
 
-    if dirty:
-        config["forms"] = forms
-        config["provisioned_at"] = datetime.now(UTC).date().isoformat()
-        config.setdefault("schema_version", 1)
-        write_json(path, config)
+    persist()
 
     return results
