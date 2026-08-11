@@ -27,10 +27,10 @@ from .runner import BenchmarkRunner
 
 
 DEFAULT_JUDGE_PROVIDER = "openai"
-DEFAULT_JUDGE_MODEL = "z-ai/glm-5.2"
-DEFAULT_JUDGE_BASE_URL = "https://openrouter.ai/api/v1"
+DEFAULT_JUDGE_MODEL = "gpt-5.6-luna"
+DEFAULT_JUDGE_BASE_URL = "https://api.openai.com/v1"
 DEFAULT_JUDGE_REASONING_EFFORT = "high"
-DEFAULT_JUDGE_OPENROUTER_PROVIDER = "decart/fp4"
+DEFAULT_JUDGE_OPENROUTER_PROVIDER = None
 
 BENCHMARK_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*\Z")
 
@@ -102,7 +102,11 @@ def _judge_api_key_env(args: argparse.Namespace) -> str | None:
     hostname = (urlparse(base_url).hostname or "").lower()
     if args.judge_provider == "openai" and hostname == "openrouter.ai":
         return "OPENROUTER_API_KEY"
-    return None
+    return {
+        "openai": "OPENAI_API_KEY",
+        "anthropic": "ANTHROPIC_API_KEY",
+        "google": "GOOGLE_API_KEY",
+    }.get(args.judge_provider)
 
 
 def _task_ids(values: list[str] | None) -> list[str] | None:

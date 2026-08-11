@@ -325,7 +325,7 @@ class NativeLLMAdapter:
                     "schema": _JUDGE_SCHEMA,
                 },
             },
-            "max_tokens": self.max_output_tokens,
+            "max_completion_tokens": self.max_output_tokens,
         }
         if self.reasoning_effort:
             payload["reasoning_effort"] = self.reasoning_effort

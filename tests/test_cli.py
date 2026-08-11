@@ -138,7 +138,7 @@ class CliSelectionTests(unittest.TestCase):
         )
 
 class DefaultJudgeSmokeTests(unittest.TestCase):
-    def test_bare_run_uses_inline_openrouter_glm_judge(self) -> None:
+    def test_bare_run_uses_inline_openai_luna_judge(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             task = public_task()
@@ -150,25 +150,17 @@ class DefaultJudgeSmokeTests(unittest.TestCase):
             args = build_parser().parse_args(["run", "--name", "judge-smoke"])
             args.reference_dir = reference_dir
             with patch.dict(
-                "os.environ", {"OPENROUTER_API_KEY": "test-openrouter-key"}
+                "os.environ", {"OPENAI_API_KEY": "test-openai-key"}
             ):
                 judge = _judge(args)
 
             self.assertIsInstance(judge, NativeLLMJudge)
             self.assertEqual(judge.provider, "openai")
-            self.assertEqual(judge.model, "z-ai/glm-5.2")
-            self.assertEqual(judge.base_url, "https://openrouter.ai/api/v1")
+            self.assertEqual(judge.model, "gpt-5.6-luna")
+            self.assertEqual(judge.base_url, "https://api.openai.com/v1")
             self.assertEqual(judge.reasoning_effort, "high")
             self.assertTrue(judge.text_only)
-            self.assertEqual(
-                judge.request_extra_body,
-                {
-                    "provider": {
-                        "only": ["decart/fp4"],
-                        "allow_fallbacks": False,
-                    }
-                },
-            )
+            self.assertEqual(judge.request_extra_body, {})
 
             requests: list[dict[str, object]] = []
 
@@ -214,21 +206,16 @@ class DefaultJudgeSmokeTests(unittest.TestCase):
             self.assertEqual(len(requests), 1)
             self.assertEqual(
                 requests[0]["url"],
-                "https://openrouter.ai/api/v1/chat/completions",
+                "https://api.openai.com/v1/chat/completions",
             )
             payload = requests[0]["payload"]
-            self.assertEqual(payload["model"], "z-ai/glm-5.2")
-            self.assertEqual(
-                payload["provider"],
-                {
-                    "only": ["decart/fp4"],
-                    "allow_fallbacks": False,
-                },
-            )
+            self.assertEqual(payload["model"], "gpt-5.6-luna")
+            self.assertNotIn("provider", payload)
+            self.assertEqual(payload["max_completion_tokens"], 4000)
             self.assertEqual(payload["reasoning_effort"], "high")
             judgement = summary["results"][0]["judgement"]
             self.assertEqual(judgement["provider"], "openai")
-            self.assertEqual(judgement["model"], "z-ai/glm-5.2")
+            self.assertEqual(judgement["model"], "gpt-5.6-luna")
             self.assertTrue(judgement["verdict"])
 
 

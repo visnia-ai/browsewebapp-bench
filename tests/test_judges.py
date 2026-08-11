@@ -138,7 +138,7 @@ class JudgeTests(unittest.TestCase):
         output = adapter._openai("system", "user", [("image/png", "aW1hZ2U=")])
         self.assertIn("json_schema", captured["payload"]["response_format"])
         self.assertEqual(captured["payload"]["reasoning_effort"], "high")
-        self.assertEqual(captured["payload"]["max_tokens"], 1234)
+        self.assertEqual(captured["payload"]["max_completion_tokens"], 1234)
         self.assertEqual(captured["headers"]["Authorization"], "Bearer test-key")
         self.assertEqual(
             captured["payload"]["provider"],

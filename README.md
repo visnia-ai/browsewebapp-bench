@@ -50,9 +50,9 @@ You can run the benchmark with
 
 Default judge configuration:
 
-- endpoint: OpenRouter
-- model: `z-ai/glm-5.2`
-- provider: `decart/fp4`, with fallback disabled
+- endpoint: OpenAI API
+- model: `gpt-5.6-luna`
+- API key: `OPENAI_API_KEY`
 - reasoning effort: `high`
 - evidence: text-only
 

@@ -37,7 +37,7 @@ The structured output is:
   "failure_reason": "",
   "impossible_task": false,
   "reached_captcha": false,
-  "model": "z-ai/glm-5.2",
+  "model": "gpt-5.6-luna",
   "provider": "openai"
 }
 ```
@@ -54,17 +54,16 @@ provider independently of the browser executor:
 
 ```bash
 pip install -e .
-export OPENROUTER_API_KEY=...
+export OPENAI_API_KEY=...
 
 rbbench run --name judging-example --task RBA-015 \
   --agent-base-url http://MODEL_HOST:8001/v1
 ```
 
-With no `--judge-*` overrides, BrowseWebApp bench immediately judges each attempt with
-OpenRouter `z-ai/glm-5.2`, pinned to `decart/fp4` with provider fallback disabled,
-high reasoning, 39,500 evidence characters, and text-only evidence. This is the
-same judge configuration used for the latest catalog semantic-projection Arm C
-result. It is a normal inline native judge, not a placeholder followed by rejudge.
+With no `--judge-*` overrides, BrowseWebApp bench immediately judges each attempt
+with OpenAI API `gpt-5.6-luna`, high reasoning, 39,500 evidence characters, and
+text-only evidence. It is a normal inline native judge, not a placeholder followed
+by rejudge.
 
 Supported built-in provider adapters are Google, OpenAI, and Anthropic. They call
 the providers' HTTPS APIs directly. `--judge-base-url` selects a compatible proxy,

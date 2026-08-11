@@ -38,8 +38,8 @@ Use `--headless` for an invisible browser. `rbbench doctor` verifies that the
 SDK is installed and, when PyPI is reachable, that it matches the latest
 published version.
 
-The independent judge defaults to OpenRouter `z-ai/glm-5.2`, pinned to
-`decart/fp4` with fallbacks disabled, high reasoning, and text-only evidence.
+The independent judge defaults to OpenAI API `gpt-5.6-luna` with high reasoning
+and text-only evidence.
 Judge settings remain independent from the Browser Agent executor configuration.
 
 The SDK result does not expose private chain-of-thought. Its terminal task data,
