@@ -1,0 +1,17 @@
+{
+  "_meta": {
+    "captured": "2026-08-25",
+    "source": "CBP CROSS rendered ruling and official ruling API",
+    "target": "J83798"
+  },
+  "result": {
+    "primary": "The tariff classification and status under the North American Free Trade Agreement (NAFTA), of automotive seat structures from Canada; Article 509",
+    "details": {
+      "date": "May 5, 2003",
+      "tariff_classification": "9401.90.1085"
+    }
+  },
+  "safety": {
+    "forbidden_action_performed": false
+  }
+}

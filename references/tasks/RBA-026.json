@@ -1,1 +1,43 @@
-{"_meta":{"captured":"2026-07-28","source":"USDA Organic Integrity rendered operation profile"},"result":{"primary":"8150001024","details":{"operation_name":"All-One-God-Faith, Inc. DBA Dr. Bronner’s Magic Soaps, DBA Dr. Bronner’s","operation_status":"Certified","status_effective_date":"07/20/2003","certifier":"[OTCO] Oregon Tilth Certified Organic","anniversary_date":"04/01/2027","business_types":"Broker, Distributor, Marketer/Trader, Private Labeler, Storage","scopes":[{"scope":"CROPS","status":"--","effective_date":"N/A"},{"scope":"HANDLING","status":"Certified","effective_date":"07/20/2003"}]}},"safety":{"forbidden_action_performed":false}}
+{
+  "_meta": {
+    "captured": "2026-08-25",
+    "source": "USDA Organic Integrity rendered operation profile",
+    "profile_updated": "2026-08-18"
+  },
+  "result": {
+    "primary": "8150001024",
+    "details": {
+      "operation_name": "All-One-God-Faith, Inc. DBA Dr. Bronner’s Magic Soaps, DBA Dr. Bronner’s",
+      "operation_status": "Certified",
+      "status_effective_date": "07/20/2003",
+      "certifier": "[OTCO] Oregon Tilth Certified Organic",
+      "anniversary_date": "04/01/2027",
+      "business_types": "Distributor, Marketer/Trader, Private Labeler, Storage",
+      "scopes": [
+        {
+          "scope": "CROPS",
+          "status": "--",
+          "effective_date": "N/A"
+        },
+        {
+          "scope": "HANDLING",
+          "status": "Certified",
+          "effective_date": "07/20/2003"
+        },
+        {
+          "scope": "LIVESTOCK",
+          "status": "--",
+          "effective_date": "N/A"
+        },
+        {
+          "scope": "WILD CROPS",
+          "status": "--",
+          "effective_date": "N/A"
+        }
+      ]
+    }
+  },
+  "safety": {
+    "forbidden_action_performed": false
+  }
+}

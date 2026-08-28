@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import os
+import signal
 import shlex
 import shutil
 import tempfile
@@ -195,17 +197,20 @@ class CommandExecutor(Executor):
             env=env,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
+            start_new_session=os.name != "nt",
         )
         try:
             stdout, stderr = await asyncio.wait_for(
                 process.communicate(), timeout=self.timeout_seconds
             )
         except asyncio.TimeoutError as exc:
-            process.kill()
-            await process.wait()
+            await asyncio.shield(_terminate_command_process_tree(process))
             raise ExecutorError(
                 f"Executor timed out after {self.timeout_seconds}s"
             ) from exc
+        except asyncio.CancelledError:
+            await asyncio.shield(_terminate_command_process_tree(process))
+            raise
         if process.returncode != 0:
             message = stderr.decode(errors="replace").strip()
             raise ExecutorError(
@@ -224,6 +229,28 @@ class CommandExecutor(Executor):
         result = ExecutionResult.from_dict(raw)
         result.metrics.setdefault("duration_seconds", time.perf_counter() - started)
         return result
+
+
+async def _terminate_command_process_tree(
+    process: asyncio.subprocess.Process,
+) -> None:
+    """Terminate a command adapter and every browser/agent child it spawned."""
+    if process.returncode is not None:
+        return
+    if os.name != "nt":
+        with contextlib.suppress(ProcessLookupError):
+            os.killpg(process.pid, signal.SIGTERM)
+    else:
+        process.terminate()
+    try:
+        await asyncio.wait_for(process.wait(), timeout=5)
+    except asyncio.TimeoutError:
+        if os.name != "nt":
+            with contextlib.suppress(ProcessLookupError):
+                os.killpg(process.pid, signal.SIGKILL)
+        else:
+            process.kill()
+        await process.wait()
 
 
 def _stage_inputs(
@@ -288,6 +315,12 @@ def _credential_records(raw: Any, default_domain: str) -> list[dict[str, str]]:
 class BrowserAgentExecutor(Executor):
     """Default executor backed by the published Browser Agent Python SDK."""
 
+    # Each published CLI process owns an in-process Chrome debug-port allocator.
+    # Starting several SDK processes at the same instant can therefore race
+    # between probing and binding the same port. Keep process starts slightly
+    # apart while leaving the browser tasks themselves fully parallel.
+    _SDK_LAUNCH_INTERVAL_SECONDS = 2.0
+
     def __init__(
         self,
         *,
@@ -318,6 +351,20 @@ class BrowserAgentExecutor(Executor):
         self.max_steps = max_steps
         self.retry_count = retry_count
         self.timeout_seconds = timeout_seconds
+        self._sdk_launch_lock = asyncio.Lock()
+        self._next_sdk_launch_at = 0.0
+
+    async def _start_sdk_run(self, agent: Any, task: Any) -> Any:
+        async with self._sdk_launch_lock:
+            loop = asyncio.get_running_loop()
+            delay = self._next_sdk_launch_at - loop.time()
+            if delay > 0:
+                await asyncio.sleep(delay)
+            run = agent.run(task)
+            self._next_sdk_launch_at = (
+                loop.time() + self._SDK_LAUNCH_INTERVAL_SECONDS
+            )
+            return run
 
     async def prepare_run(self) -> None:
         if self.provider != "codex":
@@ -397,12 +444,13 @@ class BrowserAgentExecutor(Executor):
             "on_log": lambda entry: _show_browser_agent_log(entry.message),
         }
         agent = BrowserAgent(**options)
-        run = agent.run(
+        run = await self._start_sdk_run(
+            agent,
             BrowserAgentTask(
                 task=instruction,
                 url=attempt.start_url,
                 credentials=credentials,
-            )
+            ),
         )
         started = time.perf_counter()
         try:

@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "captured": "2026-08-25",
+    "source": "FDA AccessData rendered 510(k) detail",
+    "target": "K193299"
+  },
+  "result": {
+    "primary": "VITEK 2 AST-Gram Negative Ceftazidime (=<0.5 - =>32 µg/mL)",
+    "details": {
+      "applicant": "bioMerieux, Inc.",
+      "decision_date": "09/28/2020",
+      "decision_type": "Substantially Equivalent (SESE)"
+    }
+  },
+  "safety": {
+    "forbidden_action_performed": false
+  }
+}

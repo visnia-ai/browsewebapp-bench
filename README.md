@@ -18,6 +18,7 @@ uses [Browser Agent](https://github.com/visnia-ai/browser-agent).
 
 ## Benchmark results
 
+### v1
 
 | Metric               | [Browser Agent](https://github.com/visnia-ai/browser-agent) | [Browsercode](https://github.com/browser-use/browsercode) |
 | -------------------- | --------------------------------------------------------------------------------------------------------- | ------------ |
@@ -27,8 +28,15 @@ uses [Browser Agent](https://github.com/visnia-ai/browser-agent).
 | Cost                 | **$3.73**                                                                                                 | $7.45        |
 | Successful tasks / $ | **18.77**                                                                                                 | 8.86         |
 
+### v2
 
-
+| Metric               | [Browser Agent](https://github.com/visnia-ai/browser-agent) | [Browser Agent](https://github.com/visnia-ai/browser-agent) | [Browser Agent](https://github.com/visnia-ai/browser-agent) | [Browsercode](https://github.com/browser-use/browsercode) |
+| -------------------- | ----------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------- |
+| Model                | qwen3.5-4B                                                  | [qwen3.5-4B-SFT](https://huggingface.co/visnia-ai/Qwen3.5-4B-Browser-Agent-SFT-FP8) | gpt-5.6-luna                                                | gpt-5.6-luna                                              |
+| Success              | 22%                                                         | 62%                                                         | 82%                                                         | 70%                                                       |
+| Duration (seconds)   | 51,880                                                      | 15,562                                                      | 41,756                                                      | 41,857                                                    |
+| Cost                 |                                                             |                                                             | $4.31                                                       | $6.64                                                     |
+| Successful tasks / $ |                                                             |                                                             | 19.03                                                       | 10.54                                                     |
 
 ## Install
 
@@ -71,6 +79,7 @@ export <PROVIDER>_API_KEY=...
 rbbench run \
   --name <run-id> \
   --agent-base-url <openai-compatible-base-url> \
+  --catalog tasks/tasks-v2.json \
   --parallel <N>
 ```
 

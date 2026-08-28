@@ -237,6 +237,8 @@ async def main() -> int:
     attempt_dir = Path(attempt["attempt_dir"])
     artifact_dir = Path(attempt["artifact_dir"])
     artifact_dir.mkdir(parents=True, exist_ok=True)
+    events_path = artifact_dir / "bcode-events.jsonl"
+    stderr_path = artifact_dir / "bcode-stderr.log"
     screenshot_dir = attempt_dir / "screenshots"
     screenshot_dir.mkdir(parents=True, exist_ok=True)
     workspace_dir = Path(tempfile.mkdtemp(prefix="rbbench-bcode-workspace-"))
@@ -320,40 +322,44 @@ async def main() -> int:
 
         async def drain_stderr() -> str:
             chunks: list[bytes] = []
-            while chunk := await bcode.stderr.read(64 * 1024):
-                chunks.append(chunk)
-                if sum(map(len, chunks)) > 2 * 1024 * 1024:
-                    chunks = [b"".join(chunks)[-2 * 1024 * 1024 :]]
+            with stderr_path.open("wb", buffering=0) as stderr_log:
+                while chunk := await bcode.stderr.read(64 * 1024):
+                    stderr_log.write(chunk)
+                    chunks.append(chunk)
+                    if sum(map(len, chunks)) > 2 * 1024 * 1024:
+                        chunks = [b"".join(chunks)[-2 * 1024 * 1024 :]]
             return b"".join(chunks).decode("utf-8", errors="replace")
 
         stderr_task = asyncio.create_task(drain_stderr())
-        while line := await bcode.stdout.readline():
-            raw = line.decode("utf-8", errors="replace").strip()
-            if not raw:
-                continue
-            try:
-                event = json.loads(raw)
-            except json.JSONDecodeError:
-                continue
-            event_type = str(event.get("type") or "unknown")
-            counts[event_type] += 1
-            if text := step_text(event):
-                steps.append(text)
-            part = event.get("part") if isinstance(event.get("part"), dict) else {}
-            if event_type == "text" and str(part.get("text") or "").strip():
-                final_text = str(part["text"]).strip()
-            if event_type == "error":
-                errors.append(json.dumps(event.get("error"), ensure_ascii=False))
-            values = usage_from_event(event)
-            input_tokens += int(values["input_tokens"])
-            cached_input_tokens += int(values["cached_input_tokens"])
-            output_tokens += int(values["output_tokens"])
-            reasoning_tokens += int(values["reasoning_tokens"])
-            non_reasoning_output_tokens += int(
-                values["non_reasoning_output_tokens"]
-            )
-            total_tokens += int(values["total_tokens"])
-            cost += float(values["cost"])
+        with events_path.open("wb", buffering=0) as events_log:
+            while line := await bcode.stdout.readline():
+                events_log.write(line)
+                raw = line.decode("utf-8", errors="replace").strip()
+                if not raw:
+                    continue
+                try:
+                    event = json.loads(raw)
+                except json.JSONDecodeError:
+                    continue
+                event_type = str(event.get("type") or "unknown")
+                counts[event_type] += 1
+                if text := step_text(event):
+                    steps.append(text)
+                part = event.get("part") if isinstance(event.get("part"), dict) else {}
+                if event_type == "text" and str(part.get("text") or "").strip():
+                    final_text = str(part["text"]).strip()
+                if event_type == "error":
+                    errors.append(json.dumps(event.get("error"), ensure_ascii=False))
+                values = usage_from_event(event)
+                input_tokens += int(values["input_tokens"])
+                cached_input_tokens += int(values["cached_input_tokens"])
+                output_tokens += int(values["output_tokens"])
+                reasoning_tokens += int(values["reasoning_tokens"])
+                non_reasoning_output_tokens += int(
+                    values["non_reasoning_output_tokens"]
+                )
+                total_tokens += int(values["total_tokens"])
+                cost += float(values["cost"])
         await bcode.wait()
         stderr = await stderr_task
         if bcode.returncode != 0 and not final_text:

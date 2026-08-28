@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import contextlib
+import asyncio
 import io
+import os
 import sys
 import tempfile
 import types
@@ -15,6 +17,7 @@ from rbbench.cli import build_parser, main
 from rbbench.errors import ExecutorError
 from rbbench.executors import (
     BrowserAgentExecutor,
+    CommandExecutor,
     _browser_agent_instruction,
     _stage_inputs,
 )
@@ -57,6 +60,84 @@ class InputStagingTests(unittest.TestCase):
 
 
 class BrowserAgentExecutorTests(unittest.IsolatedAsyncioTestCase):
+    async def test_sdk_process_starts_are_spaced_to_avoid_port_races(self) -> None:
+        starts: list[float] = []
+
+        class Agent:
+            def run(self, task):
+                starts.append(asyncio.get_running_loop().time())
+                return task
+
+        executor = BrowserAgentExecutor()
+        executor._SDK_LAUNCH_INTERVAL_SECONDS = 0.02
+
+        results = await asyncio.gather(
+            executor._start_sdk_run(Agent(), "one"),
+            executor._start_sdk_run(Agent(), "two"),
+            executor._start_sdk_run(Agent(), "three"),
+        )
+
+        self.assertEqual(results, ["one", "two", "three"])
+        self.assertGreaterEqual(starts[1] - starts[0], 0.015)
+        self.assertGreaterEqual(starts[2] - starts[1], 0.015)
+
+    @unittest.skipIf(os.name == "nt", "POSIX process-group behavior")
+    async def test_command_timeout_terminates_descendant_processes(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            marker = root / "child-terminated"
+            child = root / "child.py"
+            child.write_text(
+                "import os\n"
+                "import signal\n"
+                "import sys\n"
+                "import time\n"
+                "from pathlib import Path\n"
+                "def stop(_signum, _frame):\n"
+                "    Path(os.environ['CHILD_TERMINATED']).write_text('yes')\n"
+                "    raise SystemExit(0)\n"
+                "signal.signal(signal.SIGTERM, stop)\n"
+                "Path(os.environ['CHILD_READY']).write_text('yes')\n"
+                "time.sleep(30)\n",
+                encoding="utf-8",
+            )
+            adapter = root / "adapter.py"
+            adapter.write_text(
+                "import os\n"
+                "import subprocess\n"
+                "import sys\n"
+                "import time\n"
+                "subprocess.Popen([sys.executable, os.environ['CHILD_SCRIPT']])\n"
+                "time.sleep(30)\n",
+                encoding="utf-8",
+            )
+            task = load_catalog().by_id("RBA-015")
+            attempt = AttemptDescriptor(
+                "command-timeout",
+                task.task_id,
+                task.environment.start_url,
+                root / "attempt",
+                root / "attempt" / "artifacts",
+            )
+            attempt.attempt_dir.mkdir(parents=True)
+            executor = CommandExecutor(
+                f"{sys.executable} {adapter}", timeout_seconds=1
+            )
+            with (
+                patch.dict(
+                    os.environ,
+                    {
+                        "CHILD_SCRIPT": str(child),
+                        "CHILD_READY": str(root / "child-ready"),
+                        "CHILD_TERMINATED": str(marker),
+                    },
+                ),
+                self.assertRaisesRegex(ExecutorError, "timed out after 1s"),
+            ):
+                await executor.execute(task, attempt)
+
+            self.assertTrue(marker.is_file())
+
     async def test_codex_preflight_checks_sdk_once_without_login(self) -> None:
         calls: list[float] = []
 

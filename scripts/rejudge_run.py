@@ -25,6 +25,11 @@ from rbbench.schema import AttemptDescriptor, ExecutionResult
 def _arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("run_id")
+    parser.add_argument(
+        "--catalog",
+        type=Path,
+        default=REPO_ROOT / "tasks" / "tasks.json",
+    )
     parser.add_argument("--provider", default="openai")
     parser.add_argument("--model", required=True)
     parser.add_argument("--base-url", required=True)
@@ -74,7 +79,7 @@ def _attempt(raw: dict, attempt_dir: Path) -> AttemptDescriptor:
 
 async def main() -> int:
     args = _arguments()
-    catalog = load_catalog()
+    catalog = load_catalog(args.catalog)
     run_dir = REPO_ROOT / ".runs" / "results" / args.run_id
     attempt_root = REPO_ROOT / ".runs" / "attempts"
     candidates: list[Path] = []

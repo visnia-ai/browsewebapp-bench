@@ -1,0 +1,39 @@
+{
+  "_meta": {
+    "captured": "2026-08-25",
+    "source": "USDA Organic Integrity Database rendered operation profile",
+    "target": "6903966799"
+  },
+  "result": {
+    "primary": "\"BREDUN\" LP",
+    "details": {
+      "certification_status": "Certified",
+      "total_certified_acres": "10481.98",
+      "scopes": [
+        {
+          "scope": "CROPS",
+          "status": "Certified",
+          "effective_date": "11/28/2022"
+        },
+        {
+          "scope": "HANDLING",
+          "status": "--",
+          "effective_date": "N/A"
+        },
+        {
+          "scope": "LIVESTOCK",
+          "status": "--",
+          "effective_date": "N/A"
+        },
+        {
+          "scope": "WILD CROPS",
+          "status": "--",
+          "effective_date": "N/A"
+        }
+      ]
+    }
+  },
+  "safety": {
+    "forbidden_action_performed": false
+  }
+}

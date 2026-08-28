@@ -1,7 +1,7 @@
 {
-  "name": "BrowseWebApp bench",
-  "version": "2026-08-25.1",
-  "description": "One hundred bounded browser workflows covering real public websites, official simulators, form submission and creation, cloud uploads, spreadsheet transcription, artifact download, structured extraction, reconciliation, and controlled E2E validation.",
+  "name": "BrowseWebApp bench v2",
+  "version": "2.0.0",
+  "description": "Canonical v2 of the one hundred-task BrowseWebApp benchmark with concise, natural-language navigation guidance and visible completion checks. Tally, Google Forms, Box upload, and Box Note workflows are individually curated from observed editor states rather than generated from a shared prompt template. The Tally fresh-form insertion route is grounded in successful live smoke trajectories. All one hundred prompts are full replacements; non-prompt task data remains aligned with the original catalog.",
   "default_safety": {
     "forbidden_actions": [
       "submit a legally binding application",
@@ -139,7 +139,7 @@
     {
       "task_id": "RBA-001",
       "title": "ATO simulator: pre-fill summary extraction",
-      "confirmed_task": "Open the ATO online services simulator, identify yourself as Other, and choose scenario 5, 'Working holiday maker - lodge myTax, new employment'. In its 2025-26 myTax return, report the taxpayer display name and the employer name, gross payment, and tax withheld shown in the pre-filled employment-income item, and confirm that the values came from that pre-filled item. Do not change or lodge anything.",
+      "confirmed_task": "At the ATO online services simulator, choose Other, select scenario 5, 'Working holiday maker - lodge myTax, new employment', and click Start. On Home, open Jul 2025 - Jun 2026 Tax return with Prepare. Continue through Contact details, Financial institution details, and Personalise return without editing them. On Prepare your 2025-26 return, use the pre-filled employer row under Income statements and payment summaries, not the overall taxable-income total. Report the taxpayer display name, income year, employer, gross payment, and tax withheld, and confirm they came from that pre-filled item; do not change or lodge the return.",
       "category": "official_simulator/record_extraction",
       "environment_profile": "ato",
       "environment": {
@@ -178,7 +178,7 @@
     {
       "task_id": "RBA-002",
       "title": "ATO simulator: return status and estimate",
-      "confirmed_task": "In the ATO online services simulator, identify yourself as Other and choose scenario 7, 'View/amend myTax lodged returns, HELP debt, super'. Locate the latest lodged income-tax return and report the income year, lodgment status, lodgment date, taxable income, and estimate or assessment amount shown. Do not amend or lodge the return.",
+      "confirmed_task": "At the ATO online services simulator, choose Other, select scenario 7, 'View/amend myTax lodged returns, HELP debt, super', and click Start. On Home, click Manage tax returns; do not open the 2014-15 Prepare link. In Income tax History, use the first and latest lodged return. Expand its Original row and open View details, not Amend. From that return and its assessment detail, report the income year, lodgment status, lodgment date, taxable income, and assessment or refund amount; do not amend or lodge anything.",
       "category": "official_simulator/status_check",
       "environment_profile": "ato",
       "environment": {
@@ -209,7 +209,7 @@
     {
       "task_id": "RBA-003",
       "title": "ATO simulator: activity statement obligations",
-      "confirmed_task": "In the ATO online services simulator, identify yourself as Other and choose scenario 4, 'Complex myTax, BAS incl PAYGW, TPAR, STR, manage super'. Open its activity-statement history and return the three most recent finalised periods with period label, due date, status, GST 1A, GST 1B, PAYG income-tax instalment 5A, and amount owing. Do not prepare or lodge a statement.",
+      "confirmed_task": "At the ATO online services simulator, choose Other under Tell us about you, choose scenario 4, 'Complex myTax, BAS incl PAYGW, TPAR, STR, manage super', and click Start. On the Home page, open Tax, then Lodgments, then Activity statement. On the Activity statements page, select the History tab. Use the first three rows. For each row, read its period, Finalised status, payment due date, and amount owing, then click the period name—not Revise—to open its summary and read GST 1A, GST 1B, and PAYG income-tax instalment 5A. Return the three periods with those seven fields; do not prepare or revise a statement.",
       "category": "official_simulator/obligation_check",
       "environment_profile": "ato",
       "environment": {
@@ -249,7 +249,7 @@
     {
       "task_id": "RBA-004",
       "title": "ATO simulator: account transaction reconciliation",
-      "confirmed_task": "In the ATO online services simulator, identify yourself as Other and choose scenario 7, 'View/amend myTax lodged returns, HELP debt, super'. Locate the income-tax account, report its current balance, and return all four displayed transactions with processed date, effective date, description, debit, credit, and running balance. Do not initiate a payment or transfer.",
+      "confirmed_task": "At the ATO online services simulator, choose Other, select scenario 7, 'View/amend myTax lodged returns, HELP debt, super', and click Start. Open Tax, then Accounts, then Tax accounts, and select Income tax 551 for Alice Green. Report its current balance and all four transaction rows in displayed order, keeping each processed date, effective date, description, debit, credit, and running balance in its own row; do not initiate a payment or transfer.",
       "category": "official_simulator/account_reconciliation",
       "environment_profile": "ato",
       "environment": {
@@ -288,7 +288,7 @@
     {
       "task_id": "RBA-005",
       "title": "ATO simulator: HELP/AASL loan extraction",
-      "confirmed_task": "In the ATO online services simulator, identify yourself as Other and choose scenario 6, 'Non-resident with HELP debt - report worldwide income, payment plan'. Report the current HELP/AASL balance and the three most recent transaction rows with processed date, effective date, description, debit, credit, and running balance. Do not change anything.",
+      "confirmed_task": "At the ATO online services simulator, choose Other, select scenario 6, 'Non-resident with HELP debt - report worldwide income, payment plan', and click Start. On Home, open Higher education loan program (HELP), not an income-tax account. On Accounts, report the current HELP/AASL balance and the first three transaction rows in displayed order, keeping each processed date, effective date, description, debit, credit, and running balance together; leave blank debit or credit cells blank and do not change anything.",
       "category": "official_simulator/account_navigation",
       "environment_profile": "ato",
       "environment": {
@@ -319,7 +319,7 @@
     {
       "task_id": "RBA-006",
       "title": "ATO simulator: employment record review",
-      "confirmed_task": "In the ATO online services simulator, identify yourself as Other and choose scenario 5, 'Working holiday maker - lodge myTax, new employment'. Locate the current employment record and report employer, ABN, date received, tax-free-threshold selection, Medicare-levy-variation selection, whether recent super details are available, and any validation warning displayed. Do not create or submit a record.",
+      "confirmed_task": "At the ATO online services simulator, choose Other, select scenario 5, 'Working holiday maker - lodge myTax, new employment', and click Start. On Home, open Employment, then Employment details. Expand the existing current employment row; do not choose Update tax details or start a new declaration. Report the employer, ABN, date received, tax-free-threshold selection, Medicare-levy-variation selection, whether recent super details are available, and any validation warning shown.",
       "category": "official_simulator/record_review",
       "environment_profile": "ato",
       "environment": {
@@ -359,7 +359,7 @@
     {
       "task_id": "RBA-007",
       "title": "ATO simulator: agent return and ENCC cross-check",
-      "confirmed_task": "In the ATO online services simulator, identify yourself as Other and choose scenario 8, 'Lodge myTax, view agent lodged returns, super ENCC election'. Report the latest agent-lodged return's year, status, lodgment date, lodgment method, and outcome, then cross-check the excess non-concessional contributions election's year, status, determination date, non-concessional-contributions amount, and excess amount. Do not lodge, amend, or revoke anything.",
+      "confirmed_task": "At the ATO online services simulator, choose Other under Tell us about you, choose scenario 8, 'Lodge myTax, view agent lodged returns, super ENCC election', and click Start. On the Home page, click Manage tax returns. In Income tax, stay on the History tab and use the first return, 2024-25 Individual. In its Original row, read the status, outcome, and date, then expand that row's details to read the lodgment method; do not click Amend. Return to Home and open Super, then Manage, then Non-concessional election. Under Available elections, use the 2024-2025 row and expand its details; do not click Lodge. Report the return's year, status, lodgment date, lodgment method, and outcome, followed separately by the election's year, availability status, determination date, NCC amount, and ENCC amount.",
       "category": "official_simulator/cross_page_reconciliation",
       "environment_profile": "ato",
       "environment": {
@@ -404,7 +404,7 @@
     {
       "task_id": "RBA-008",
       "title": "ATO simulator: document and notice inventory",
-      "confirmed_task": "In the ATO online services simulator, identify yourself as Other and choose scenario 7, 'View/amend myTax lodged returns, HELP debt, super'. Open Communication history and return all five displayed items with subject, channel, and issue date. Do not open links that create a new request or response, and do not download correspondence.",
+      "confirmed_task": "At the ATO online services simulator, choose Other under Tell us about you, choose scenario 7, 'View/amend myTax lodged returns, HELP debt, super', and click Start. On the Home page, open My profile, then Communication, then History. On the Communication history page, read all five rows in displayed order. Do not open a correspondence item and do not use Download list of communication histories. Return each row's subject, channel, and issue date.",
       "category": "official_simulator/document_inventory",
       "environment_profile": "ato",
       "environment": {
@@ -440,7 +440,7 @@
     {
       "task_id": "RBA-009",
       "title": "Tally standard service intake",
-      "confirmed_task": "Submit the existing service-intake form exactly once. Enter Casey Morgan; casey.{{attempt_id}}@example.invalid; Operations; Equipment; needed by 2026-08-21; and details 'Replace a failed docking station at desk L-14.'. Do not create an account or another form.",
+      "confirmed_task": "On the existing published Tally Operations service intake form, enter Casey Morgan in Requester name and casey.{{attempt_id}}@example.invalid in Work email. Select Operations for Department and Equipment for Request type, set Needed by to 2026-08-21, and enter 'Replace a failed docking station at desk L-14.' in Details. Click Submit exactly once and stop on the confirmation page; do not create an account or another form.",
       "category": "forms/structured_submission",
       "environment_profile": "tally",
       "environment": {
@@ -476,7 +476,7 @@
     {
       "task_id": "RBA-010",
       "title": "Tally password-protected incident report",
-      "confirmed_task": "Open the protected incident form with password incident-access-2026. Submit exactly once with reporter devon.{{attempt_id}}@example.invalid, incident type Security, data exposed Yes, data types 'Customer email addresses only', incident date 2026-07-24, and description 'A customer-contact export was attached to the wrong support ticket.'. Do not sign into the Tally account.",
+      "confirmed_task": "On Tally's Password screen, enter incident-access-2026 and click Continue. In the incident report, enter devon.{{attempt_id}}@example.invalid as Reporter email, select Security for Incident type and Yes for data exposed, enter 'Customer email addresses only' in Data types exposed, set Incident date to 2026-07-24, and enter 'A customer-contact export was attached to the wrong support ticket.' in Description. Click Submit exactly once and stop on the confirmation page; do not sign into Tally.",
       "category": "forms/password_gate_and_submission",
       "environment_profile": "tally",
       "environment": {
@@ -514,7 +514,7 @@
     {
       "task_id": "RBA-011",
       "title": "Tally compliance-document upload",
-      "confirmed_task": "Request reference {{attempt_id}}: submit the existing compliance upload form exactly once. Enter Morgan Lee, asset NR8-24017, certificate type Electrical safety, upload the supplied PDF, and set expiry 2027-07-14. Leave the optional notes field blank.",
+      "confirmed_task": "For request {{attempt_id}}, on the existing published Tally compliance form, enter Morgan Lee in Contact name and NR8-24017 in Asset ID, then select Electrical safety for Certificate type. At Certificate file, use upload_files to attach only the supplied NR8-24017 compliance-certificate PDF and wait until its filename is shown. Set Expiry date to 2027-07-14, leave Notes blank, click Submit exactly once, and stop on the confirmation page.",
       "category": "forms/file_upload",
       "environment_profile": "tally",
       "environment": {
@@ -552,7 +552,7 @@
     {
       "task_id": "RBA-012",
       "title": "Tally localized protected support request",
-      "confirmed_task": "Abre el formulario protegido con la contraseña soporte-producto-2026 y envíalo una sola vez. Usa Nombre Ana Torres; correo ana.{{attempt_id}}@example.invalid; Producto Aplicación móvil; Prioridad Alta; Fecha límite 2026-08-05; Descripción 'La aplicación se cierra al adjuntar un informe en PDF.'. No inicies sesión en la cuenta de Tally.",
+      "confirmed_task": "En la pantalla Contraseña de Tally, introduce soporte-producto-2026 y pulsa Continuar. En Solicitud de soporte de producto, completa Nombre con Ana Torres, Correo electrónico con ana.{{attempt_id}}@example.invalid, Producto con Aplicación móvil, Prioridad con Alta, Fecha límite con 2026-08-05 y Descripción con 'La aplicación se cierra al adjuntar un informe en PDF.'. Pulsa Enviar una sola vez y detente en la confirmación; no inicies sesión en Tally.",
       "category": "forms/localized_submission",
       "environment_profile": "tally",
       "environment": {
@@ -590,7 +590,7 @@
     {
       "task_id": "RBA-013",
       "title": "Tally reconciled purchase request",
-      "confirmed_task": "Request reference {{attempt_id}}: complete the existing purchase request once for Jamie Park and cost center CC-204. Request 4 keyboards, 2 USB-C docks, and 3 laptop stands. Use the displayed unit prices and 8% tax to enter the exact total including tax. Enter justification 'Replace failed peripherals in the operations lab.'. Do not make a purchase or payment.",
+      "confirmed_task": "For request {{attempt_id}}, on the existing published Tally Office equipment purchase request, enter Jamie Park in Requester name and CC-204 in Cost center. Enter 4 for Keyboard quantity, 2 for Dock quantity, and 3 for Laptop stand quantity. Calculate Requested total including tax from the unit prices shown on the form and the displayed 8% tax, then enter 'Replace failed peripherals in the operations lab.' in Business justification. Click Submit exactly once and stop on confirmation; do not enter a purchase or payment flow.",
       "category": "forms/calculation_and_submission",
       "environment_profile": "tally",
       "environment": {
@@ -633,7 +633,7 @@
     {
       "task_id": "RBA-014",
       "title": "Tally invoice-to-form transcription",
-      "confirmed_task": "Processing reference {{attempt_id}}: read the supplied invoice PDF and transcribe it into the existing invoice form exactly once. Preserve the vendor, invoice and purchase-order identifiers, dates, currency, subtotal, tax, and total exactly as printed. Do not pay the invoice.",
+      "confirmed_task": "For processing reference {{attempt_id}}, read the supplied invoice PDF, then use the existing published Tally Accounts payable invoice form. Copy the printed Vendor, Invoice number, Invoice date, Purchase order, Currency, Subtotal, Tax, Total, and Payment due into the identically labelled fields. Check that subtotal plus tax equals the printed total, click Submit exactly once, and stop on confirmation; do not pay the invoice.",
       "category": "forms/document_transcription",
       "environment_profile": "tally",
       "environment": {
@@ -673,7 +673,7 @@
     {
       "task_id": "RBA-015",
       "title": "FCC equipment authorization summary",
-      "confirmed_task": "Search the FCC equipment authorization interface for grantee code 2AOKB and exact product code -A3102E. Return the FCC ID, applicant, application purpose, final-action date, and displayed frequency range. Do not use a third-party FCC mirror.",
+      "confirmed_task": "In the FCC Equipment Authorization search, enter 2AOKB in Grantee Code and -A3102E in Product Code, keep the product match exact, and click Search. On OET Authorization Search Results, use the row for FCC ID 2AOKB-A3102E. Report that row's FCC ID, applicant, application purpose, final-action date, and displayed lower-to-upper frequency range; do not use a third-party mirror.",
       "category": "registry/equipment_authorization",
       "environment_profile": "public",
       "environment": {
@@ -704,7 +704,7 @@
     {
       "task_id": "RBA-016",
       "title": "FCC grant and exhibit reconciliation",
-      "confirmed_task": "Use the FCC equipment authorization interface for FCC ID BCG-E8438A. Select the Original Equipment application finalized 09/12/2023 whose displayed band is 668.0–693.0 MHz. Report the applicant and grant fields, then open its exhibits and return the filename, document type, exhibit date, and available date for exhibit '14523744-E18V2 FCC LTE Report_Part1'. Do not use a mirror.",
+      "confirmed_task": "In the FCC Equipment Authorization search, enter BCG in Grantee Code and -E8438A in Product Code, keep the product match exact, and click Search. Use the Original Equipment row finalized 09/12/2023 with band 668.0-693.0 MHz. Read its applicant and requested grant fields, then open Exhibits for that same row and locate '14523744-E18V2 FCC LTE Report_Part1'. Report that exhibit's filename, document type, exhibit date, and available date; do not use a mirror or another application.",
       "category": "registry/cross_page_reconciliation",
       "environment_profile": "public",
       "environment": {
@@ -738,7 +738,7 @@
     {
       "task_id": "RBA-017",
       "title": "FCC exhibit PDF download",
-      "confirmed_task": "Find FCC ID BCGA2602 in the FCC equipment authorization interface. Open the Original Equipment application finalized 09/14/2021 with displayed band 5180.0–5240.0 MHz. Download the public 'FCC E-Label Info' exhibit and return its exhibit type, submitted date, display type, and available date. Do not download confidential exhibits.",
+      "confirmed_task": "In the FCC Equipment Authorization search, enter BCG in Grantee Code and A2602 in Product Code, keep the product match exact, and click Search. Use the Original Equipment row finalized 09/14/2021 with band 5180.0-5240.0 MHz. Open Exhibits for that row, find the public FCC E-Label Info exhibit, and use its download action once. Wait for the PDF to finish, then report the exhibit type, submitted date, display type, and available date; do not open confidential exhibits.",
       "category": "registry/document_download",
       "environment_profile": "public",
       "environment": {
@@ -798,7 +798,7 @@
     {
       "task_id": "RBA-018",
       "title": "FDA 510(k) decision summary",
-      "confirmed_task": "Search the FDA 510(k) database for K231854. Return device name, applicant, decision date, decision, product code, regulation number, and review advisory committee. Do not use a commercial device database.",
+      "confirmed_task": "In the FDA 510(k) search, enter K231854 in 510K Number and click Search. Open the exact K231854 record if the detail is not already displayed. From that record, report device name, applicant, decision date, decision, product code, regulation number, and review advisory committee; do not use a commercial device database or a search snippet.",
       "category": "registry/medical_device",
       "environment_profile": "public",
       "environment": {
@@ -827,7 +827,7 @@
     {
       "task_id": "RBA-019",
       "title": "FDA recall status and reason",
-      "confirmed_task": "Use the FDA Medical Device Recall database to find recall Z-1624-2024. Return product, recalling firm, recall status, classification, initiation date, reason, and distribution pattern exactly as shown.",
+      "confirmed_task": "In FDA AccessData Medical Device Recalls, search Recall Number Z-1624-2024 and open the exact matching recall record. From its labelled detail sections, report product, recalling firm, recall status, classification, initiation date, reason, and distribution pattern exactly as shown.",
       "category": "registry/recall_check",
       "environment_profile": "public",
       "environment": {
@@ -856,7 +856,7 @@
     {
       "task_id": "RBA-020",
       "title": "FDA device listing cross-check",
-      "confirmed_task": "In FDA AccessData, look up product code QAS and inspect its classification record. Return device name, device class, regulation number, submission type, definition, review panel, premarket-review office, and third-party eligibility. Do not use an API.",
+      "confirmed_task": "In FDA AccessData Product Classification, search Product Code QAS and open the exact classification record. From that record, report device name, device class, regulation number, submission type, definition, review panel, premarket-review office, and third-party eligibility; do not use an API, a search snippet, or a commercial database.",
       "category": "registry/cross_page_reconciliation",
       "environment_profile": "public",
       "environment": {
@@ -885,7 +885,7 @@
     {
       "task_id": "RBA-021",
       "title": "CBP ruling lookup by number",
-      "confirmed_task": "Use the CBP Customs Rulings Online Search System to locate ruling N296416. Return ruling number, issue date, category, subject, tariff classification number, requestor, merchandise construction, and duty rate.",
+      "confirmed_task": "In CBP CROSS, enter N296416 in Search and open the result labelled Open ruling N296416 in the side panel or new tab. On that ruling, use the heading metadata and ruling body. Report the ruling number, issue date, category, subject, tariff classification number, requestor, merchandise construction, and duty rate from that same record.",
       "category": "registry/customs_ruling",
       "environment_profile": "public",
       "environment": {
@@ -914,7 +914,7 @@
     {
       "task_id": "RBA-022",
       "title": "CBP ruling search and result filtering",
-      "confirmed_task": "In CROSS, search the exact phrase 'reusable shopping bags'. Report the result count and the first five results in displayed order with ruling number and issue date.",
+      "confirmed_task": "In CBP CROSS, enter \"reusable shopping bags\" in Search, including the quotation marks, and submit it. Wait for the complete result list, record its displayed total count, then report only the first five rows in displayed order, pairing each ruling number with its adjacent issue date.",
       "category": "registry/search_and_filter",
       "environment_profile": "public",
       "environment": {
@@ -944,7 +944,7 @@
     {
       "task_id": "RBA-023",
       "title": "CBP ruling DOC download and extraction",
-      "confirmed_task": "Find ruling N296416 in CROSS, use its Download action to download the site-provided legacy Word DOC file, then return the requestor, merchandise construction, tariff number, and duty rate from the rendered ruling.",
+      "confirmed_task": "In CBP CROSS, search ruling N296416 and open the exact rendered ruling. Click Download once and wait for the site-provided legacy Word .doc file to finish. From the rendered ruling, report the requestor, merchandise construction, tariff number, and duty rate, and confirm that the downloaded artifact is the CROSS DOC file.",
       "category": "registry/document_download",
       "environment_profile": "public",
       "environment": {
@@ -998,7 +998,7 @@
     {
       "task_id": "RBA-024",
       "title": "USDA organic operation certification check",
-      "confirmed_task": "Search the USDA Organic Integrity Database for 'Organic Valley' and open the exact CROPP Cooperative DBA Organic Valley profile with NOP ID 8150001357. Return operation name, status and effective date, certifier, NOP ID, anniversary date, business types, total certified acres, and each scope with its status and effective date.",
+      "confirmed_task": "In the USDA Organic Integrity Database, open Advanced Search, enter 8150001357 in NOP Operation ID, and click Search. Open CROPP Cooperative DBA Organic Valley and verify that the profile shows that NOP ID. Read the profile header, Operation Details, and Scope and Product Summary. Report the operation name, status and effective date, certifier, NOP ID, anniversary date, business types, total certified acres, and every scope with its status and effective date.",
       "category": "registry/certification_status",
       "environment_profile": "public",
       "environment": {
@@ -1028,7 +1028,7 @@
     {
       "task_id": "RBA-025",
       "title": "USDA certifier and scope reconciliation",
-      "confirmed_task": "In the USDA Organic Integrity Database, search for 'Frontier Co-op' and open the profile with NOP ID 5520030614. Return operation status and effective date, certifier, anniversary date, business types, and each scope with its status and effective date. Do not enumerate the long product list.",
+      "confirmed_task": "In the USDA Organic Integrity Database, open Advanced Search, enter 5520030614 in NOP Operation ID, and click Search. Open Frontier Co-op and verify that the profile shows that NOP ID. From the profile header, Operation Details, and Scope and Product Summary, report operation status and effective date, certifier, anniversary date, business types, and every scope with its status and effective date; do not enumerate the product inventory.",
       "category": "registry/cross_page_reconciliation",
       "environment_profile": "public",
       "environment": {
@@ -1058,7 +1058,7 @@
     {
       "task_id": "RBA-026",
       "title": "USDA organic certificate download",
-      "confirmed_task": "Find the USDA Organic Integrity profile for Dr. Bronner's with NOP ID 8150001024. Export its public operation profile to PDF and return operation name, certifier, status effective date, anniversary date, business types, and certified scope statuses.",
+      "confirmed_task": "In the USDA Organic Integrity Database, open Advanced Search, enter 8150001024 in NOP Operation ID, and click Search. Open the Dr. Bronner's operation and verify that the profile shows that NOP ID. Read the profile header and Scope and Product Summary, then click Export Operation Profile to PDF once and wait for the download. Report the operation name, certifier, status effective date, anniversary date, business types, and certified scope statuses, and confirm the PDF completed.",
       "category": "registry/document_download",
       "environment_profile": "public",
       "environment": {
@@ -1113,7 +1113,7 @@
     {
       "task_id": "RBA-027",
       "title": "IRS withholding outcome check",
-      "confirmed_task": "Use the IRS Tax Withholding Estimator for tax year 2026. Model a single filer who will be under 65 on 2027-01-01, is not blind, cannot be claimed as another person's dependent, and has no dependants. Use one job held for all of 2026, paid semi-monthly, with most recent pay 2026-07-15, $3,750 wages and $420 federal withholding on that pay, $48,750 year-to-date wages, and $5,460 year-to-date withholding. There are no bonuses, other income, adjustments, itemized or additional deductions, or credits; use the standard deduction. Return the projected refund or amount owed if withholding is unchanged and the estimator's recommended additional withholding per pay period for a zero-dollar target. Do not download or submit a W-4.",
+      "confirmed_task": "Open the IRS Tax Withholding Estimator for 2026. In About you, choose Single, under 65 on 2027-01-01, not blind, not claimable as a dependent, and no dependants. In Income, add one Salary job for All year, paid Twice monthly: most recent pay 2026-07-15, $3,750 current wages, $420 current federal withholding, $48,750 year-to-date wages, and $5,460 year-to-date withholding, with no bonus. Continue with zero other income and adjustments, the standard deduction, zero additional deductions and credits, and a $0 target. On Results, report the unchanged projected refund or amount owed and the recommended additional withholding per pay period; do not download or submit a W-4.",
       "category": "government/calculator/tax",
       "environment_profile": "public",
       "environment": {
@@ -1162,7 +1162,7 @@
     {
       "task_id": "RBA-028",
       "title": "IRS two-job withholding reconciliation",
-      "confirmed_task": "Use the IRS Tax Withholding Estimator for tax year 2026. Model a married couple filing jointly who will live together all year. Both spouses will be under 65 on 2027-01-01, neither is blind or claimable as another person's dependent, and they have two qualifying children under 17. Use two jobs held for all of 2026. Job A is biweekly with most recent pay 2026-07-17, $4,600 wages and $510 federal withholding on that pay, $64,400 year-to-date wages, and $7,140 year-to-date withholding. Job B is monthly with most recent pay 2026-06-30, $3,200 wages and $190 federal withholding on that pay, $19,200 year-to-date wages, and $1,140 year-to-date withholding. There are no bonuses, other income, adjustments, itemized or additional deductions, or credits other than the two qualifying children; use the standard deduction. Return the projected refund or amount owed if withholding is unchanged and the exact W-4 Step 3 and Step 4(c) entries the estimator recommends for each job for a zero-dollar target. Do not download or submit a W-4.",
+      "confirmed_task": "Open the IRS Tax Withholding Estimator for 2026. In About you, choose Married Filing Jointly, living together all year, both spouses under 65 on 2027-01-01, neither blind nor claimable as a dependent, and two children under 17. In Income, add Job A for Myself as Salary, All year, Every two weeks: most recent pay 2026-07-17, $4,600 current wages, $510 current federal withholding, $64,400 year-to-date wages, and $7,140 year-to-date withholding, with no bonus. Add Job B for My spouse as Salary, All year, Once a month: most recent pay 2026-06-30, $3,200 current wages, $190 current federal withholding, $19,200 year-to-date wages, and $1,140 year-to-date withholding, with no bonus. Continue with zero other income and adjustments, the standard deduction, zero additional deductions, two qualifying children, zero other credits, and a $0 target. On Results, expand each Adjust ... W-2 job card. Report the unchanged projected refund or amount owed and each job's exact W-4 Step 3 and Step 4(c) entries; do not download or submit a W-4.",
       "category": "government/calculator/tax",
       "environment_profile": "public",
       "environment": {
@@ -1229,7 +1229,7 @@
     {
       "task_id": "RBA-029",
       "title": "Federal Student Aid lowest-payment plan",
-      "confirmed_task": "Use the Federal Student Aid Repayment Calculator without signing in. Enter Single, adjusted gross income $48,000, 0 dependents, 0 other dependents, Ohio, loan balance $32,000, and average interest rate 5.50%; leave the optional disbursement date blank. Return the plan labeled Lowest Monthly Payment and its monthly payment, total to be paid, principal paid, interest paid, ending payment balance, and end-of-term date.",
+      "confirmed_task": "In the Federal Student Aid Repayment Calculator, click Get Started, then Continue Without Logging In. Enter Single, $48,000 adjusted gross income, 0 dependents, 0 other dependents, Ohio, $32,000 loan balance, and 5.50% average interest; leave the optional disbursement date blank. Click Show Plans and open the card labelled Lowest Monthly Payment. Report its plan name, monthly payment, total paid, principal paid, interest paid, ending payment balance, and end-of-term date.",
       "category": "government/calculator/student_loan",
       "environment_profile": "public",
       "environment": {
@@ -1266,7 +1266,7 @@
     {
       "task_id": "RBA-030",
       "title": "Federal Student Aid lowest-total plan",
-      "confirmed_task": "Use the Federal Student Aid Repayment Calculator without signing in. Enter Married Filing Jointly, combined adjusted gross income $147,000, 0 dependents, 0 other dependents, California, your loan balance $68,500, and your average interest rate 8.05%; leave the optional disbursement date and optional spouse-loan fields blank. Return the plan labeled Lowest Total Paid and compare its monthly payment, total to be paid, and end-of-term date with the plan labeled Lowest Monthly Payment.",
+      "confirmed_task": "In the Federal Student Aid Repayment Calculator, click Get Started, then Continue Without Logging In. Enter Married Filing Jointly, $147,000 combined adjusted gross income, 0 dependents, 0 other dependents, California, $68,500 loan balance, and 8.05% average interest; leave the disbursement date and spouse-loan fields blank. Click Show Plans. Report the plan name, monthly payment, total paid, and end date from both the Lowest Total Paid and Lowest Monthly Payment cards, keeping the two cards separate.",
       "category": "government/calculator/student_loan",
       "environment_profile": "public",
       "environment": {
@@ -1305,7 +1305,7 @@
     {
       "task_id": "RBA-031",
       "title": "GOV.UK visit permission check",
-      "confirmed_task": "Use GOV.UK Check if you need a UK visa for a Canadian passport holder who is not a dual British or Irish citizen and is travelling for tourism. Return the final outcome, the two application options shown, the activities prohibited for tourists, the required border document, and every possible proof listed under the UK-border section.",
+      "confirmed_task": "In GOV.UK Check if you need a UK visa, click Start now. Select Canada for nationality, answer No to British or Irish dual citizenship, and choose Tourism or visiting family and friends, clicking Continue after each answer. On the result page, report the overall outcome, both application options, every tourist prohibition, the required border document, and every proof listed in the UK-border section.",
       "category": "government/eligibility_navigation",
       "environment_profile": "public",
       "environment": {
@@ -1336,7 +1336,7 @@
     {
       "task_id": "RBA-032",
       "title": "GOV.UK skilled-work permission check",
-      "confirmed_task": "Use GOV.UK Check if you need a UK visa for an Indian passport holder who is not a dual British or Irish citizen, is coming to work longer than 6 months, and selects 'another type of job'. From the result, return the overall visa outcome and the Skilled Worker visa's job-offer, sponsor, minimum-salary, English, initial-length, extension, and settlement requirements.",
+      "confirmed_task": "In GOV.UK Check if you need a UK visa, click Start now. Select India for nationality, answer No to British or Irish dual citizenship, choose Work, academic visit or business, then longer than 6 months, then I want to do another type of job - show me other work visas, clicking Continue after each answer. On the result page, report the overall visa outcome and the Skilled Worker visa's job-offer, sponsor, minimum-salary, English, initial-length, extension, and settlement requirements.",
       "category": "government/eligibility_navigation",
       "environment_profile": "public",
       "environment": {
@@ -1369,7 +1369,7 @@
     {
       "task_id": "RBA-033",
       "title": "GOV.UK holiday entitlement calculation",
-      "confirmed_task": "Use the GOV.UK holiday entitlement calculator for a regular-hours employee whose entitlement is based on days worked per week, starting and leaving part way through the leave year. Enter 5 days per week, start date 2026-04-06, and end date 2026-11-20. Return the statutory entitlement and all echoed inputs.",
+      "confirmed_task": "In the GOV.UK holiday entitlement calculator, click Start now. Answer No to irregular hours or part-year work, choose days worked per week, then for someone starting and leaving part way through a leave year. Enter start date 2026-04-06, end date 2026-11-20, and 5 days worked per week, clicking Continue after each page. From Outcome, report the statutory entitlement and every echoed input.",
       "category": "government/calculator/employment",
       "environment_profile": "public",
       "environment": {
@@ -1403,7 +1403,7 @@
     {
       "task_id": "RBA-034",
       "title": "GOV.UK redundancy entitlement calculation",
-      "confirmed_task": "Use the GOV.UK redundancy pay calculator for a worker made redundant on 2026-07-31, aged 44 on that date, with 16 complete years of service and gross weekly pay £720. Return the standard and Northern Ireland payment amounts, entitlement weeks, weekly-pay caps, and maximum statutory amounts shown.",
+      "confirmed_task": "In the GOV.UK redundancy pay calculator, click Start now. Enter redundancy date 2026-07-31, age 44, 16 complete years with the employer, and £720 weekly pay before deductions, clicking Continue after each page. From the result, report the entitlement weeks, weekly-pay caps, standard and Northern Ireland payment amounts, and both maximum statutory amounts.",
       "category": "government/calculator/employment",
       "environment_profile": "public",
       "environment": {
@@ -1435,7 +1435,7 @@
     {
       "task_id": "RBA-035",
       "title": "Yahoo Finance MSFT revenue to Google Sheets",
-      "confirmed_task": "Go to Yahoo Finance and search for Microsoft (MSFT). Navigate to their financials and extract the 'Total Revenue' for the last four available quarters. Once you have these four numbers, open Google Sheets and create a new spreadsheet. Input the quarter identifiers (e.g., Q1 2024) in column A and the corresponding revenue numbers in column B. You must navigate to each cell by typing its coordinate into the Name field, and then input the value by typing it into the Formula field.",
+      "confirmed_task": "On Yahoo Finance, search MSFT, open Microsoft, then Financials, and switch the table to Quarterly. Pair the four newest displayed quarter headings with the Total Revenue row; do not use annual columns. Open one new Google Sheet and write quarter labels in A1:A4 and matching revenue values in B1:B4, selecting every cell through the Name box and entering every value through the Formula bar. Re-read A1:B4 to verify the pairs.",
       "category": "sheets/extract_and_write",
       "environment_profile": "public",
       "environment": {
@@ -1466,7 +1466,7 @@
     {
       "task_id": "RBA-036",
       "title": "World Bank GDP to Google Sheets",
-      "confirmed_task": "Navigate to the World Bank website and extract the most recently reported GDP in USD for Germany, France, Italy, and Spain. After retrieving this data, open Google Sheets and create a new spreadsheet. Record the country names and their respective GDPs by entering the cell coordinates into the Name field to navigate, and using the Formula field to write the data into each cell.",
+      "confirmed_task": "On the World Bank site, use each country indicator page to obtain the latest reported GDP in current USD for Germany, France, Italy, and Spain, keeping the reported year and units consistent. Open one new Google Sheet, put the four countries in A1:A4 and their matching GDP values in B1:B4, selecting every cell through the Name box and entering every value through the Formula bar. Re-read A1:B4 to verify the pairs.",
       "category": "sheets/extract_and_write",
       "environment_profile": "public",
       "environment": {
@@ -1501,7 +1501,7 @@
     {
       "task_id": "RBA-037",
       "title": "USGS earthquakes to Google Sheets",
-      "confirmed_task": "Go to the USGS Earthquake Hazards Program website and extract the magnitudes of the five most recent earthquakes recorded globally. Open a new Google Spreadsheet. Using the Name box to jump to specific cells and the Formula bar to input the data, log the earthquake locations in the first column and their magnitudes in the second column.",
+      "confirmed_task": "On the USGS Latest Earthquakes page, use the five newest global events in displayed order and pair each location with its magnitude. Open one new Google Sheet, write locations in A1:A5 and matching magnitudes in B1:B5, selecting every cell through the Name box and entering every value through the Formula bar. Re-read A1:B5 to verify the pairs.",
       "category": "sheets/extract_and_write",
       "environment_profile": "public",
       "environment": {
@@ -1531,7 +1531,7 @@
     {
       "task_id": "RBA-038",
       "title": "FRED unemployment to Google Sheets",
-      "confirmed_task": "Go to the FRED (Federal Reserve Economic Data) website and extract the US National Unemployment Rate for the last four available months. Next, navigate to Google Sheets and create a new spreadsheet. Input the month/year identifiers in column A and the corresponding unemployment percentages in column B, using only the Name field to select cells and the Formula field to enter values.",
+      "confirmed_task": "On FRED, search UNRATE and open the Unemployment Rate series. Use its monthly observations and record the four latest month/year labels with their adjacent percentages. Open one new Google Sheet and write the labels in A1:A4 and values in B1:B4, selecting every cell through the Name box and entering every value through the Formula bar. Re-read A1:B4 to verify the pairs.",
       "category": "sheets/extract_and_write",
       "environment_profile": "public",
       "environment": {
@@ -1561,7 +1561,7 @@
     {
       "task_id": "RBA-039",
       "title": "EPA highway MPG to Google Sheets",
-      "confirmed_task": "Search for the EPA's Fuel Economy website and extract the estimated 'Highway MPG' for the latest models of the Toyota Prius, Honda Accord Hybrid, Hyundai Elantra Hybrid, and Toyota Camry Hybrid. Once you have these four values, go to Google Sheets and create a new sheet. You must exclusively use the Name field to select cells (e.g., typing A1, B1) and the Formula field to enter the car models and their MPG.",
+      "confirmed_task": "On the official Fuel Economy site, open Power Search, choose the latest model year, and find Toyota Prius, Honda Accord Hybrid, Hyundai Elantra Hybrid, and Toyota Camry Hybrid. Record each exact hybrid model with its Highway MPG; do not substitute city or combined MPG. In one new Google Sheet, write models in A1:A4 and matching values in B1:B4, selecting cells through the Name box and entering values through the Formula bar. Re-read A1:B4 to verify the pairs.",
       "category": "sheets/extract_and_write",
       "environment_profile": "public",
       "environment": {
@@ -1596,7 +1596,7 @@
     {
       "task_id": "RBA-040",
       "title": "ESA Rosetta image to Box",
-      "confirmed_task": "On the European Space Agency (ESA) website, find the Rosetta mission image gallery, download a high-resolution image of comet 67P, and upload it to box.com, even if there is already a file with the same name in your account.",
+      "confirmed_task": "Navigate to https://www.esa.int/ESA_Multimedia/Images/2014/11/Welcome_to_a_comet. Confirm it is a Rosetta image of comet 67P, use the image page's HI-RES high-resolution download, and wait until the image filename is complete. Navigate to https://app.box.com/ and open Files. Open New once so File Upload is visible; invoke upload_files directly on File Upload with only the completed ESA image, without clicking File Upload first. Wait until Box finishes the upload and the identical filename appears in the file list.",
       "category": "cloud/box_upload",
       "environment_profile": "public",
       "environment": {
@@ -1627,7 +1627,7 @@
     {
       "task_id": "RBA-041",
       "title": "Smithsonian Apollo 11 TIFF to Box",
-      "confirmed_task": "On Smithsonian Open Access, search for the Apollo 11 command module, download a high-resolution TIFF image, then upload the downloaded file to box.com, even if there is already a file with the same name present.",
+      "confirmed_task": "In Smithsonian Open Access, search for 'Apollo 11 Command Module Columbia' and open the Command Module, Apollo 11 object record. In its Images area, open Download Image and choose the original or highest-resolution option only when it is identified as TIFF; do not switch to an unrelated Apollo object merely to obtain a TIFF. Wait for the .tif or .tiff filename. Navigate to https://app.box.com/ and open Files. Open New once to expose File Upload, then invoke upload_files on File Upload with only that TIFF; do not click File Upload first. Wait for Box to show completion and the identical filename.",
       "category": "cloud/box_upload",
       "environment_profile": "public",
       "environment": {
@@ -1658,7 +1658,7 @@
     {
       "task_id": "RBA-042",
       "title": "arXiv quantum entanglement PDF to Box",
-      "confirmed_task": "On arXiv.org, search for a recent paper on 'quantum entanglement', download the PDF version, then upload it to box.com, even if files with the same names already exist.",
+      "confirmed_task": "On arXiv, search for 'quantum entanglement', open a recent matching paper's abstract page, and choose Download PDF. Wait until the .pdf filename is complete. Navigate to https://app.box.com/ and open Files. Open New once to expose File Upload, then invoke upload_files directly on File Upload with only that PDF; do not click File Upload first. Wait for Box to show completion and the same filename.",
       "category": "cloud/box_upload",
       "environment_profile": "public",
       "environment": {
@@ -1688,7 +1688,7 @@
     {
       "task_id": "RBA-043",
       "title": "arXiv transformers PDF to Box",
-      "confirmed_task": "On arXiv.org, search for a paper related to 'machine learning transformers', download the PDF, then upload it to box.com, even if files with the same names already exist.",
+      "confirmed_task": "On arXiv, search for 'machine learning transformers', open one matching paper's abstract page, and choose Download PDF. Wait until the .pdf filename is complete. Navigate to https://app.box.com/ and open Files. Open New once to expose File Upload, then invoke upload_files directly on File Upload with only that PDF; do not click File Upload first. Wait for Box to show completion and the same filename.",
       "category": "cloud/box_upload",
       "environment_profile": "public",
       "environment": {
@@ -1718,7 +1718,7 @@
     {
       "task_id": "RBA-044",
       "title": "LibriVox Art of War MP3 to Box",
-      "confirmed_task": "On LibriVox.org, search for 'The Art of War', download the first chapter as an MP3, then upload it to box.com, even if files with the same names already exist.",
+      "confirmed_task": "On LibriVox, search for The Art of War and open its book page. In the chapter list, download the first chapter's MP3 rather than a playlist or page link, and wait for the .mp3 filename. Navigate to https://app.box.com/ and open Files. Open New once to expose File Upload, then invoke upload_files directly on File Upload with only that MP3; do not click File Upload first. Wait for Box to show completion and the identical filename.",
       "category": "cloud/box_upload",
       "environment_profile": "public",
       "environment": {
@@ -1748,7 +1748,7 @@
     {
       "task_id": "RBA-045",
       "title": "Met van Gogh Open Access to Box",
-      "confirmed_task": "On the Metropolitan Museum of Art (The Met) website, filter by 'Open Access', search for Vincent van Gogh, download an image of his work, then upload it to box.com, even if a file with the same name already exists.",
+      "confirmed_task": "On The Met, enable Open Access, search for Vincent van Gogh, and open one matching artwork's object page. Choose Download Image and wait for the image filename to complete. Navigate to https://app.box.com/ and open Files. Open New once to expose File Upload, then invoke upload_files directly on File Upload with only that downloaded image; do not click File Upload first. Wait for Box to show completion and the identical filename.",
       "category": "cloud/box_upload",
       "environment_profile": "public",
       "environment": {
@@ -1778,7 +1778,7 @@
     {
       "task_id": "RBA-046",
       "title": "Vendor portal password plus one-time-code login",
-      "confirmed_task": "Sign into the vendor portal as analyst.{{attempt_id}}@example.invalid with password northstar-portal-2026. Retrieve the one-time code from the linked Northstar Mail page, complete sign-in, and return the account display name and session-security banner. Do not change settings.",
+      "confirmed_task": "On the vendor sign-in page, enter analyst.{{attempt_id}}@example.invalid and northstar-portal-2026, then click Sign in. At the one-time-code prompt, open Northstar Mail and read the newest code for this login. Click Return to sign in, enter that code, and click Sign in. On Account, report the account display name and session-security banner; do not change settings.",
       "category": "controlled/authentication",
       "environment_profile": "controlled",
       "environment": {
@@ -1809,7 +1809,7 @@
     {
       "task_id": "RBA-047",
       "title": "Vendor portal role-based permission validation",
-      "confirmed_task": "Work order {{attempt_id}}: as the Viewer account, open vendor record VEN-204, report its visible vendor, status, risk tier, and role, download the public attachment, and use the rendered Edit action once to confirm the permission-denied behavior. Do not attempt circumvention or modify data.",
+      "confirmed_task": "For work order {{attempt_id}}, in the vendor records list, open VEN-204 with the Viewer account. Read its vendor, status, risk tier, and role, then click Download public attachment and wait for VEN-204-public.txt to finish. Click Edit record exactly once. From the resulting Permission denied page, report the record fields, downloaded filename, and denied behavior; do not retry or attempt circumvention.",
       "category": "controlled/permissions_e2e",
       "environment_profile": "controlled",
       "environment": {
@@ -1839,7 +1839,7 @@
     {
       "task_id": "RBA-048",
       "title": "Vendor portal paginated export download",
-      "confirmed_task": "Work order {{attempt_id}}: filter invoices to Exception status and 2026-06-01 through 2026-06-30. Visit all three result pages, report the matching count and total balance, and download both exports.",
+      "confirmed_task": "For work order {{attempt_id}}, on Vendor invoices, set Status to Exception and the date range to 2026-06-01 through 2026-06-30, then click Apply filters once. Read the matching rows on the first page, Page 2, and Page 3, and calculate their count and total balance. Click Download CSV and Download PDF and wait for both files. Report the count, total balance, and exact downloaded filenames.",
       "category": "controlled/export_and_reconciliation",
       "environment_profile": "controlled",
       "environment": {
@@ -1922,7 +1922,7 @@
     {
       "task_id": "RBA-049",
       "title": "Vendor portal upload and workflow-state validation",
-      "confirmed_task": "Work order {{attempt_id}}: upload the supplied compliance certificate PDF to case CASE-1049, submit it for validation, wait for Accepted, and return the parsed case ID and document ID. Do not modify any other case.",
+      "confirmed_task": "For work order {{attempt_id}}, open only case CASE-1049. At Choose file, use upload_files to attach the supplied CASE-1049-compliance-certificate PDF and wait until its filename is selected. Click Submit for validation once and wait until the case shows Accepted. Report the parsed case ID and document ID from that accepted record; do not modify any other case.",
       "category": "controlled/upload_workflow",
       "environment_profile": "controlled",
       "environment": {
@@ -1953,7 +1953,7 @@
     {
       "task_id": "RBA-050",
       "title": "Vendor portal concurrent-update conflict handling",
-      "confirmed_task": "Work order {{attempt_id}}: open record EXC-550, set status to Resolved and note 'Verified after refreshing the conflicting update.', save, then handle the stale-version conflict through the rendered UI by reloading and applying the same bounded update exactly once. Report the final status and version.",
+      "confirmed_task": "For work order {{attempt_id}}, open conflict record EXC-550. Set Status to Resolved, enter 'Verified after refreshing the conflicting update.' in Note, and click Save update. On the stale-version conflict, click Reload latest version once. Reapply the same status and note, then click Save update once more. Report the final status and version from the saved record.",
       "category": "controlled/concurrency_e2e",
       "environment_profile": "controlled",
       "environment": {
@@ -1982,7 +1982,7 @@
     {
       "task_id": "RBA-051",
       "title": "Thingiverse cable organizer STL to Box",
-      "confirmed_task": "On Thingiverse, search for 'cable organizer', download an STL file from a popular design, then upload it to box.com, even if a file with the same name already exists.",
+      "confirmed_task": "On Thingiverse, search for 'cable organizer', open a popular design, open its downloadable files, and download one STL file. Wait until the .stl filename is complete. Navigate to https://app.box.com/ and open Files. Open New once to expose File Upload, then invoke upload_files directly on File Upload with only that STL; do not click File Upload first. Wait until Box shows upload completion and the identical filename.",
       "category": "cloud/box_upload",
       "environment_profile": "public",
       "environment": {
@@ -2012,7 +2012,7 @@
     {
       "task_id": "RBA-052",
       "title": "NOAA hurricane eye photo to Box",
-      "confirmed_task": "On the NOAA Photo Library, search for 'hurricane eye', download a high-resolution weather photo, then upload it to box.com, even if a file with the same name already exists.",
+      "confirmed_task": "In the NOAA Photo Library, search for 'hurricane eye', open one matching photograph's item page, and choose its high-resolution image download. Wait for the exact image filename. Navigate to https://app.box.com/ and open Files. Open New once to expose File Upload, then invoke upload_files directly on File Upload with only that image; do not click File Upload first. Wait until Box shows completion and the identical filename.",
       "category": "cloud/box_upload",
       "environment_profile": "public",
       "environment": {
@@ -2041,7 +2041,7 @@
     {
       "task_id": "RBA-053",
       "title": "Jamendo acoustic MP3 to Box",
-      "confirmed_task": "On Jamendo Music, filter for royalty-free instrumental acoustic music, download an MP3 track, then upload it to box.com, even if files with the same names already exist.",
+      "confirmed_task": "Navigate to https://www.jamendo.com/start, open Music search, and apply the instrumental and acoustic filters. Open a matching track page, confirm both attributes, choose Free Download, then choose MP3 and wait for the .mp3 filename. Navigate to https://app.box.com/ and open Files. Open New once to expose File Upload, then invoke upload_files directly on File Upload with only that MP3; do not click File Upload first. Wait for completion and the same filename.",
       "category": "cloud/box_upload",
       "environment_profile": "public",
       "environment": {
@@ -2071,7 +2071,7 @@
     {
       "task_id": "RBA-054",
       "title": "NYPL Manhattan map to Box",
-      "confirmed_task": "On the New York Public Library (NYPL) Digital Collections, search for an 18th-century map of Manhattan, download the highest resolution image, and upload it to box.com, even if a file with the same name already exists.",
+      "confirmed_task": "Navigate to https://digitalcollections.nypl.org/, search for 'Manhattan map', and filter the results to 1700-1799. Open an item whose title, date, and description identify an eighteenth-century Manhattan map. In Download Options choose the highest available image resolution and wait for its filename. Navigate to https://app.box.com/ and open Files. Open New once to expose File Upload, then invoke upload_files directly on File Upload with only that map image; do not click File Upload first. Verify completion and the identical filename.",
       "category": "cloud/box_upload",
       "environment_profile": "public",
       "environment": {
@@ -2100,7 +2100,7 @@
     {
       "task_id": "RBA-055",
       "title": "ESA Rosetta TIFF convert JPG to Box",
-      "confirmed_task": "On the ESA website, download the highest-resolution Rosetta comet image available (prefer TIFF). If the download is not already JPG, convert it to JPG on tinywow.com, then upload that JPG to box.com, even if there is already a file with the same name.",
+      "confirmed_task": "On ESA, open a Rosetta comet image record whose download options actually include TIFF and download that TIFF. Wait for the .tif or .tiff filename before leaving ESA. Open TinyWow's TIFF-to-JPG converter, invoke upload_files on its Add Files control with only the TIFF, run the conversion, and use Download after the JPG is ready. Wait for the completed .jpg filename. Navigate to https://app.box.com/ and open Files. Open New once to expose File Upload, then invoke upload_files directly on File Upload with only the converted JPG; do not click File Upload first. Verify completion and the identical converted filename.",
       "category": "cloud/convert_and_upload",
       "environment_profile": "public",
       "environment": {
@@ -2132,7 +2132,7 @@
     {
       "task_id": "RBA-056",
       "title": "arXiv black holes PDF convert DOC to Box",
-      "confirmed_task": "On arXiv.org, download a PDF paper on black holes, convert it to a DOC file on tinywow.com, then upload the Word document to box.com, even if files with the same names already exist.",
+      "confirmed_task": "On arXiv, search for 'black holes', open one matching paper's abstract page, choose Download PDF, and wait for the .pdf filename. Navigate to TinyWow at https://tinywow.com/convert/pdf-to-word. On PDF to Word, invoke upload_files on Add Files with only that PDF. Wait for processing to finish, choose Download, and verify that the completed converted file is DOC/DOCX (.doc or .docx) rather than PDF. Navigate to https://app.box.com/ and open Files. Open New once to expose File Upload, then invoke upload_files directly on File Upload with only the converted Word file; do not click File Upload first. Verify completion and the identical filename.",
       "category": "cloud/convert_and_upload",
       "environment_profile": "public",
       "environment": {
@@ -2163,7 +2163,7 @@
     {
       "task_id": "RBA-057",
       "title": "Met Renaissance JPEG convert PDF to Box",
-      "confirmed_task": "On The Met's Open Access gallery, download the highest-resolution JPEG image of a Renaissance painting, convert it to a PDF on tinywow.com, and upload it to box.com, even if a file with the same name already exists.",
+      "confirmed_task": "Navigate to https://www.metmuseum.org/art/collection/search/437674 and confirm the public-domain Madonna and Child by Luca Signorelli. Choose Download Image and wait for the JPEG filename. Navigate to https://tinywow.com/pdf/from-jpg. On Convert JPG to PDF, invoke upload_files on Add Files with only that JPEG, choose Create PDF, then Download, and wait for the completed .pdf. Navigate to https://app.box.com/ and open Files. Open New once to expose File Upload, then invoke upload_files directly on File Upload with only the converted PDF; do not click File Upload first. Verify completion and the identical converted filename.",
       "category": "cloud/convert_and_upload",
       "environment_profile": "public",
       "environment": {
@@ -2196,7 +2196,7 @@
     {
       "task_id": "RBA-058",
       "title": "NOAA weather map convert PDF to Box",
-      "confirmed_task": "On the NOAA Photo Library, download a historical weather map image, convert it to a PDF on tinywow.com, then upload the PDF to box.com, even if a file with the same name already exists.",
+      "confirmed_task": "In the NOAA Photo Library, search for a historical weather map, open the matching item page, download its JPG image, and wait for the completed filename. Navigate to TinyWow at https://tinywow.com/pdf/from-jpg. On Convert JPG to PDF, invoke upload_files on Add Files with only that NOAA JPG. Wait for processing to finish, choose Create PDF and then Download, and verify the completed .pdf filename. Navigate to https://app.box.com/ and open Files. Open New once to expose File Upload, then invoke upload_files directly on File Upload with only the PDF. Do not click File Upload first. Verify completion and the identical converted filename.",
       "category": "cloud/convert_and_upload",
       "environment_profile": "public",
       "environment": {
@@ -2227,7 +2227,7 @@
     {
       "task_id": "RBA-059",
       "title": "LibriVox Pride and Prejudice OGG convert WAV to Box",
-      "confirmed_task": "On LibriVox, open Pride and Prejudice (version 5), follow its Internet Archive Page, and download one chapter OGG. Navigate to https://tinywow.com/video/ogg-to-wav, convert that OGG to WAV, then upload only the completed WAV to Box and verify the identical filename.",
+      "confirmed_task": "On LibriVox, open Pride and Prejudice (version 5), then open its Internet Archive Page. Under DOWNLOAD OPTIONS expand OGG VORBIS and download one chapter .ogg file. Wait for the completed .ogg filename. Navigate to https://tinywow.com/video/ogg-to-wav. On OGG to WAV, invoke upload_files on Upload from PC or Mobile with only that OGG. Wait for conversion, choose Download, and verify the completed .wav filename. Navigate to https://app.box.com/ and open Files. Open New once to expose File Upload, then invoke upload_files directly on File Upload with only the WAV; do not click File Upload first. Verify completion and the identical converted filename.",
       "category": "cloud/convert_and_upload",
       "environment_profile": "public",
       "environment": {
@@ -2261,7 +2261,7 @@
     {
       "task_id": "RBA-060",
       "title": "Stoicism principles into Box Note",
-      "confirmed_task": "Go to the Stanford Encyclopedia of Philosophy, extract the core principles of Stoicism (such as the dichotomy of control), and document them in a new Box Note on box.com.",
+      "confirmed_task": "Navigate to https://plato.stanford.edu/entries/stoicism/ and read the sections describing Stoic aims, core principles, and what is and is not under our control. Navigate to https://app.box.com/ and open Files. Click New once, choose Box Note once, and wait for the new Untitled note editor. Replace Untitled with a descriptive title and replace Start writing with a structured summary of Stoic aims and principles that includes the dichotomy of control. Do not create a second note. Wait for All changes saved, then re-read the title and body.",
       "category": "cloud/box_note",
       "environment_profile": "public",
       "environment": {
@@ -2291,7 +2291,7 @@
     {
       "task_id": "RBA-061",
       "title": "TCP vs UDP summary into Box Note",
-      "confirmed_task": "Find information on the technical differences between TCP and UDP networking protocols, write a comparative summary regarding speed and reliability, and save it as a new Box Note on box.com.",
+      "confirmed_task": "Navigate to https://www.cloudflare.com/learning/ddos/glossary/user-datagram-protocol-udp/ and read How does UDP work?, How is UDP different from TCP?, and What is UDP used for?. Navigate to https://app.box.com/ and open Files. Click New once, choose Box Note once, and wait for the new Untitled note editor. Replace Untitled with a descriptive title and replace Start writing with a TCP-versus-UDP comparison covering connection model, delivery and ordering, overhead, reliability, and uses. Do not create another note. Wait for All changes saved and re-read it.",
       "category": "cloud/box_note",
       "environment_profile": "public",
       "environment": {
@@ -2319,7 +2319,7 @@
     {
       "task_id": "RBA-062",
       "title": "Antarctic Treaty into Box Note",
-      "confirmed_task": "Look up the history and signing of the Antarctic Treaty System, list its primary provisions regarding scientific research and demilitarization, and document them in a new Box Note on box.com.",
+      "confirmed_task": "Navigate to https://www.ats.aq/e/antarctictreaty.html and read the introduction and Some important provisions. Navigate to https://app.box.com/ and open Files. Click New once, choose Box Note once, and wait for the Untitled editor. Replace Untitled with a descriptive title and replace Start writing with a summary separating the treaty's history and signing from its science, cooperation, peaceful-use, and demilitarisation provisions. Create only this note. Wait for All changes saved, then re-read its title and body.",
       "category": "cloud/box_note",
       "environment_profile": "public",
       "environment": {
@@ -2347,7 +2347,7 @@
     {
       "task_id": "RBA-063",
       "title": "mRNA vaccine mechanism into Box Note",
-      "confirmed_task": "Research the mechanism of action of mRNA vaccines, write a clear, step-by-step biological explanation of how they generate an immune response, and create a new Box Note on box.com containing this text.",
+      "confirmed_task": "Navigate to https://www.cdc.gov/covid/vaccines/how-they-work.html and read the mRNA vaccines section titled How mRNA COVID-19 vaccines work. Navigate to https://app.box.com/ and open Files. Click New once, choose Box Note once, and wait for the Untitled editor. Replace Untitled with a descriptive title and replace Start writing with the sequence from delivery and cellular uptake through antigen production, immune recognition, antibody or T-cell response, and memory. Do not create another note. Wait for All changes saved and re-read the saved content.",
       "category": "cloud/box_note",
       "environment_profile": "public",
       "environment": {
@@ -2375,7 +2375,7 @@
     {
       "task_id": "RBA-064",
       "title": "Thermodynamics laws into Box Note",
-      "confirmed_task": "Find a physics summary of the four laws of thermodynamics, write out the formal definitions and simple explanations for each law, and create a new Box Note on box.com containing this list.",
+      "confirmed_task": "Navigate to https://web.stanford.edu/~peastman/statmech/thermodynamics.html and read 5.2. The Laws of Thermodynamics, including the named Zeroth through Third Law passages and the first-law equation. Navigate to https://app.box.com/ and open Files. Click New once, choose Box Note once, and wait for the Untitled editor. Replace Untitled with a descriptive title and replace Start writing with the four laws in order, each with a formal statement and simple explanation. Do not create another note. Wait for All changes saved and re-read it.",
       "category": "cloud/box_note",
       "environment_profile": "public",
       "environment": {
@@ -2403,7 +2403,7 @@
     {
       "task_id": "RBA-065",
       "title": "Colosseum architecture into Box Note",
-      "confirmed_task": "Go to the World History Encyclopedia, find information about the architectural techniques used in the construction of the Colosseum, and write a comprehensive summary in a new note on box.com.",
+      "confirmed_task": "Navigate to https://www.worldhistory.org/Colosseum/ and read the construction and architecture passages. Navigate to https://app.box.com/ and open Files. Click New once, choose Box Note once, and wait for the Untitled editor. Replace Untitled with a descriptive title and replace Start writing with sections for materials, structural systems, construction methods, and how those choices supported the building's use. Do not create a second note. Wait for All changes saved, then re-read the title and body.",
       "category": "cloud/box_note",
       "environment_profile": "public",
       "environment": {
@@ -2432,7 +2432,7 @@
     {
       "task_id": "RBA-066",
       "title": "RISC vs CISC into Box Note",
-      "confirmed_task": "Investigate the architectural differences between RISC and CISC computer processors, create a bulleted list of pros and cons for each, and write it into a new Box Note on box.com.",
+      "confirmed_task": "Navigate to https://cs.stanford.edu/people/eroberts/courses/soco/projects/risc/risccisc/index.html and read The CISC Approach, The RISC Approach, and RISC Roadblocks. Navigate to https://app.box.com/ and open Files. Click New once, choose Box Note once, and wait for the Untitled editor. Replace Untitled with a descriptive title and replace Start writing with definitions plus separate advantages and disadvantages for RISC and CISC. Create only this note. Wait for All changes saved and re-read the saved content.",
       "category": "cloud/box_note",
       "environment_profile": "public",
       "environment": {
@@ -2460,7 +2460,7 @@
     {
       "task_id": "RBA-067",
       "title": "Tragedy of the Commons into Box Note",
-      "confirmed_task": "Find information about the economic concept of 'The Tragedy of the Commons', write an explanation featuring real-world environmental examples, and paste it into a new note on box.com.",
+      "confirmed_task": "Navigate to https://www.britannica.com/science/tragedy-of-the-commons and read the opening definition and modern examples. Navigate to https://app.box.com/ and open Files. Click New once, choose Box Note once, and wait for the Untitled editor. Replace Untitled with a descriptive title and replace Start writing with a definition, the incentive mechanism, and multiple environmental examples. Do not create another note. Wait for All changes saved and re-read the title and body.",
       "category": "cloud/box_note",
       "environment_profile": "public",
       "environment": {
@@ -2488,7 +2488,7 @@
     {
       "task_id": "RBA-068",
       "title": "Linux kernel 1991-2000 into Box Note",
-      "confirmed_task": "Research the early development timeline of the Linux kernel from its inception in 1991 to the year 2000, and write a historical summary in a new note on box.com.",
+      "confirmed_task": "Open https://www.kernel.org/doc/ols/2011/ols2011-masters.pdf and read the historical overview of Linux's development from 1991 through 2000. Navigate to https://app.box.com/ and open Files. Click New once, choose Box Note once, and wait for the Untitled editor. Replace Untitled with a descriptive title and replace Start writing with a chronological timeline covering inception, early releases, major 1.x and 2.x milestones, and ecosystem growth. Do not create another note. Wait for All changes saved and re-read it.",
       "category": "cloud/box_note",
       "environment_profile": "public",
       "environment": {
@@ -2516,7 +2516,7 @@
     {
       "task_id": "RBA-069",
       "title": "Bretton Woods into Box Note",
-      "confirmed_task": "Look up the history of the 1944 Bretton Woods Agreement, summarize its creation of the IMF and World Bank, and document this financial history in a new Box Note on box.com.",
+      "confirmed_task": "Navigate to https://www.imf.org/external/np/exr/center/mm/eng/cc_sub_4.htm and read Bretton Woods: July 1-22, 1944, International Monetary Fund and World Bank, and The IMF. Navigate to https://app.box.com/ and open Files. Click New once, choose Box Note once, and wait for the Untitled editor. Replace Untitled with a descriptive title and replace Start writing with the conference, monetary framework, and distinct IMF and World Bank purposes. Create only this note. Wait for All changes saved and re-read the saved content.",
       "category": "cloud/box_note",
       "environment_profile": "public",
       "environment": {
@@ -2544,7 +2544,7 @@
     {
       "task_id": "RBA-070",
       "title": "Bystander Effect into Box Note",
-      "confirmed_task": "Find information about the social psychology concept of the 'Bystander Effect', summarize the foundational research by Latané and Darley, and write it into a new note on box.com.",
+      "confirmed_task": "Navigate to https://www.britannica.com/topic/bystander-effect and read the definition and the passages on Latané and Darley's experiments. Navigate to https://app.box.com/ and open Files. Click New once, choose Box Note once, and wait for the Untitled editor. Replace Untitled with a descriptive title and replace Start writing with the definition, foundational work, proposed mechanisms, and an illustrative situation. Create exactly one note and leave no extra Untitled notes. Wait for All changes saved, then re-read its title and body.",
       "category": "cloud/box_note",
       "environment_profile": "public",
       "environment": {
@@ -2572,7 +2572,7 @@
     {
       "task_id": "RBA-071",
       "title": "Sourdough fermentation into Box Note",
-      "confirmed_task": "Look up the chemical process of fermentation in traditional sourdough bread making, write a scientific explanation of yeast and lactobacilli activity, and save it in a new Box Note on box.com.",
+      "confirmed_task": "Navigate to https://pubmed.ncbi.nlm.nih.gov/28732554/ and read the Abstract. Navigate to https://app.box.com/ and open Files. Click New once, choose Box Note once, and wait for the Untitled editor. Replace Untitled with a descriptive title and replace Start writing with the roles of yeast and lactobacilli, their substrates and products, and their effects on dough and flavour. Do not create another note. Wait for All changes saved and re-read the saved content.",
       "category": "cloud/box_note",
       "environment_profile": "public",
       "environment": {
@@ -2600,7 +2600,7 @@
     {
       "task_id": "RBA-072",
       "title": "Tally create endangered species form",
-      "confirmed_task": "Create a Tally form for endangered species featuring text fields and a file upload field. Search the web for population details and a photo of the Amur Leopard. Fill the form with this data, submit it, and validate that the submission was received correctly in the Tally backend.",
+      "confirmed_task": "Navigate to https://programs.wcs.org/china/Wildlife/Amur-Leopard.aspx and read the Status section for the population estimate and survey year. Open https://commons.wikimedia.org/wiki/File:Amur_Leopard_Panthera_pardus_orientalis_Facing_Forward_1761px.jpg, choose Original file only if it is under 10 MB, and wait for the JPG filename. In Tally choose New form, then Blank form, and set the form title to 'Amur Leopard Conservation Record'. Click Click to insert your first block. In Insert anything, search Short answer, choose it, and click Insert. Replace Type a question with 'Population details' and mark it required. At the next empty insertion point, insert another required Short answer labelled 'Population source and year', then insert a required File upload labelled 'Amur Leopard photo' the same way. Publish, open the responder link, invoke upload_files on the photo control with only the leopard JPG, enter both text values, and submit once. In Submissions verify both values and the filename.",
       "category": "forms/tally_create",
       "environment_profile": "public",
       "environment": {
@@ -2633,7 +2633,7 @@
     {
       "task_id": "RBA-073",
       "title": "Tally create solar system form",
-      "confirmed_task": "Log into Tally and create a text-only form to track solar system planet data. Search the web for the mass and orbital distance of Jupiter. Fill out the form, submit it, and check the Tally backend to confirm the data was accurately recorded.",
+      "confirmed_task": "Navigate to https://www.asc-csa.gc.ca/eng/astronomy/solar-system/jupiter.asp and record the Mass and Average distance from the Sun rows with units from the Jupiter fact table. In Tally choose New form, then Blank form, and set the title to 'Jupiter Planet Data'. Click Click to insert your first block. In Insert anything, search Short answer, choose it, and click Insert. Replace Type a question with 'Mass' and mark it required. At the next empty insertion point, search Short answer, choose it, click Insert, replace Type a question with 'Average orbital distance', and mark it required. Publish the form, open its responder link, enter the two researched values, and submit once. Open Submissions and verify both stored values.",
       "category": "forms/tally_create",
       "environment_profile": "public",
       "environment": {
@@ -2664,7 +2664,7 @@
     {
       "task_id": "RBA-074",
       "title": "Tally create chemical elements form",
-      "confirmed_task": "Create a text-only Tally form to log chemical elements. Search the web for the atomic number, symbol, and atomic weight of Bismuth. Fill in the form, submit it, and check the Tally submissions page to validate the data.",
+      "confirmed_task": "Navigate to https://pubchem.ncbi.nlm.nih.gov/element/Bismuth and record Atomic Number, Symbol, and Atomic Mass from the element summary. In Tally choose New form, then Blank form, and set the title to 'Bismuth Element Record'. Click Click to insert your first block. In Insert anything, search Short answer, choose it, and click Insert. Replace Type a question with 'Atomic number' and mark it required. At each next empty insertion point, insert another required Short answer the same way, first labelled 'Symbol' and then 'Atomic weight'. Publish, open the responder link, enter all three PubChem values, and submit once. In Submissions verify the atomic number, symbol, and atomic weight in the single response.",
       "category": "forms/tally_create",
       "environment_profile": "public",
       "environment": {
@@ -2695,7 +2695,7 @@
     {
       "task_id": "RBA-075",
       "title": "Tally create Nobel Prize form",
-      "confirmed_task": "Create a text-only Tally form designed to log Nobel Prize winners. Search the web for the most recent winner of the Nobel Prize in Physics and their discovery. Fill out the form, submit it, and validate the entry in the Tally backend.",
+      "confirmed_task": "Navigate to https://www.nobelprize.org/prizes/physics/2025/summary/ and record the award year, the first displayed laureate, and the shared prize citation. In Tally choose New form, then Blank form, and set the title to 'Nobel Prize in Physics Winner'. Click Click to insert your first block. In Insert anything, search Short answer, choose it, and click Insert. Replace Type a question with 'Winner' and mark it required. At each next empty insertion point, insert another required Short answer the same way, first labelled 'Award year' and then 'Discovery or contribution'. Publish, open the responder link, enter the three researched values, and submit once. In Submissions verify the single response contains all three values.",
       "category": "forms/tally_create",
       "environment_profile": "public",
       "environment": {
@@ -2726,7 +2726,7 @@
     {
       "task_id": "RBA-076",
       "title": "Tally create particle physics form",
-      "confirmed_task": "Set up a text-only Tally form dedicated to particle physics. Search the web for the measured mass of a Higgs Boson particle in GeV. Fill in the form, submit it, and check the Tally submissions page to validate the data.",
+      "confirmed_task": "Navigate to https://cms.cern/news/cms-precisely-measures-mass-higgs-boson and record the highlighted measured mass with the GeV unit and CMS as the source. In Tally choose New form, then Blank form, and set the title to 'Higgs Boson Measurement'. Click Click to insert your first block. In Insert anything, search Short answer, choose it, and click Insert. Replace Type a question with 'Measured mass in GeV' and mark it required. At the next empty insertion point, insert another required Short answer the same way and label it 'Source'. Publish, open the responder link, enter the mass including GeV and the source CMS, and submit once. In Submissions verify exactly those two stored values.",
       "category": "forms/tally_create",
       "environment_profile": "public",
       "environment": {
@@ -2757,7 +2757,7 @@
     {
       "task_id": "RBA-077",
       "title": "Tally create US National Parks form",
-      "confirmed_task": "Design a Tally form for US National Parks containing text and image upload blocks. Search the web for the founding year of Yellowstone and a photo of Old Faithful. Fill out the published form, submit it, and validate the submission in the Tally backend.",
+      "confirmed_task": "Navigate to https://www.nps.gov/yell/planyourvisit/parkfacts.htm, open History, and record Yellowstone's establishment year. Open the NPS Old Faithful photo page and download the 960-pixel JPG rendition rather than an original over 10 MB; wait for its filename. In Tally choose New form, then Blank form, and title it 'Yellowstone National Park'. Click Click to insert your first block. In Insert anything, search Short answer, choose it, and click Insert. Replace Type a question with 'Founding year' and mark it required. At the next empty insertion point, search File upload, choose it, click Insert, replace Type a question with 'Old Faithful image', and mark it required. Publish and open the responder link. Invoke upload_files on the image control with only the smaller JPG, enter the year, and submit once. In Submissions verify the year and uploaded filename.",
       "category": "forms/tally_create",
       "environment_profile": "public",
       "environment": {
@@ -2790,7 +2790,7 @@
     {
       "task_id": "RBA-078",
       "title": "Tally create programming languages form",
-      "confirmed_task": "Design a text-only Tally form for programming languages. Search the web for the initial release year of Python and the name of its creator. Fill in the form, submit it, and check the Tally submissions page to validate the data.",
+      "confirmed_task": "Navigate to https://docs.python.org/3/faq/general.html and read Why was Python created in the first place? for the creator and the paragraph dating the first public USENET release. In Tally choose New form, then Blank form, and set the title to 'Python Language Record'. Click Click to insert your first block. In Insert anything, search Short answer, choose it, and click Insert. Replace Type a question with 'Initial release year' and mark it required. At the next empty insertion point, insert another required Short answer the same way and label it 'Creator'. Publish, open the responder link, enter the year and creator, and submit once. In Submissions verify the single response contains both values.",
       "category": "forms/tally_create",
       "environment_profile": "public",
       "environment": {
@@ -2821,7 +2821,7 @@
     {
       "task_id": "RBA-079",
       "title": "Tally create cryptocurrencies form",
-      "confirmed_task": "Build a text-only Tally form focused on cryptocurrencies. Search the web for the exact publication date and pseudonymous author of the Bitcoin whitepaper. Fill out the form, submit it, and validate the received data in the Tally backend.",
+      "confirmed_task": "Navigate to https://www.metzdowd.com/pipermail/cryptography/2008-October/014810.html and read the message header for its exact date and sender, and confirm it links Bitcoin: A Peer-to-Peer Electronic Cash System. In Tally choose New form, then Blank form, and set the title to 'Bitcoin Whitepaper'. Click Click to insert your first block. In Insert anything, search Short answer, choose it, and click Insert. Replace Type a question with 'Publication date' and mark it required. At the next empty insertion point, insert another required Short answer the same way and label it 'Author or pseudonym'. Publish, open the responder link, enter the message date and sender/pseudonym, and submit once. In Submissions verify both values in the single response.",
       "category": "forms/tally_create",
       "environment_profile": "public",
       "environment": {
@@ -2852,7 +2852,7 @@
     {
       "task_id": "RBA-080",
       "title": "Tally create meteorological form",
-      "confirmed_task": "Build a Tally form for meteorological data with text and image upload blocks. Search the web for a description and a picture of Cumulonimbus clouds. Submit this information through your form and verify it in the Tally submissions dashboard.",
+      "confirmed_task": "Navigate to https://prod-01-alb-www-noaa.woc.noaa.gov/jetstream/clouds/ten-basic-clouds and read the Cumulonimbus (Cb) description. Open https://prod-01-alb-www-noaa.woc.noaa.gov/noaa-collections/photo-library/wea00105jpg, choose Download, and wait for wea00105.jpg. In Tally choose New form, then Blank form, and title it 'Cumulonimbus Cloud Data'. Click Click to insert your first block. In Insert anything, search Long answer, choose it, and click Insert. Replace Type a question with 'Description' and mark it required. At the next empty insertion point, search File upload, choose it, click Insert, replace Type a question with 'Cumulonimbus image', and mark it required. Publish and open the responder link. Invoke upload_files on the image control with only wea00105.jpg, enter the NOAA description, and submit once. In Submissions verify the description and filename.",
       "category": "forms/tally_create",
       "environment_profile": "public",
       "environment": {
@@ -2885,7 +2885,7 @@
     {
       "task_id": "RBA-081",
       "title": "Tally create renewable energy form",
-      "confirmed_task": "Create a text-only Tally form to track renewable energy statistics. Search the web for the total global solar energy output in the most recent year available. Fill out the form, submit it, and validate the received data in the Tally backend.",
+      "confirmed_task": "Navigate to https://ourworldindata.org/grapher/solar-energy-generation-by-region, select World, move to the latest displayed year, and record the year, total with TWh, and Our World in Data as the source. In Tally choose New form, then Blank form, and title it 'Global Solar Energy Output'. Click Click to insert your first block. In Insert anything, search Short answer, choose it, and click Insert. Replace Type a question with 'Most recent reporting year' and mark it required. At each next empty insertion point, insert another required Short answer the same way, first labelled 'Total output with unit' and then 'Source'. Publish, open the responder link, enter all three values, submit once, and verify the single response in Submissions.",
       "category": "forms/tally_create",
       "environment_profile": "public",
       "environment": {
@@ -2916,7 +2916,7 @@
     {
       "task_id": "RBA-082",
       "title": "Tally create world cuisines form",
-      "confirmed_task": "Create a text-only Tally form focused on world cuisines. Search the web for the traditional core ingredients of an authentic Pad Thai. Fill out the form, submit it, and validate the received data in the Tally backend.",
+      "confirmed_task": "Navigate to https://www.doae.go.th/en/pad-thai/ and read the Ingredients section, excluding preparation steps and optional garnishes. In Tally choose New form, then Blank form, and set the title to 'Authentic Pad Thai'. Click Click to insert your first block. In Insert anything, search Long answer, choose it, and click Insert. Replace Type a question with 'Traditional core ingredients' and mark it required. Do not insert another question. Publish, open the responder link, enter the ingredients, and submit once. In Submissions verify the complete stored ingredients response.",
       "category": "forms/tally_create",
       "environment_profile": "public",
       "environment": {
@@ -2947,7 +2947,7 @@
     {
       "task_id": "RBA-083",
       "title": "Tally create Space Race form",
-      "confirmed_task": "Set up a Tally form for Space Race milestones containing text and image upload blocks. Search the web for the launch date of Sputnik 1 and a photo of the satellite. Fill out the published form, submit it, and validate the submission in the Tally backend.",
+      "confirmed_task": "Verify Sputnik 1's launch date from a substantive source, then open Wikimedia Commons File:Sputnik 1.jpg, select Original file, download the displayed JPEG, and wait for Sputnik_1.jpg before opening Tally. In Tally choose New form, then Blank form, and title it 'Sputnik 1 Milestone'. Click Click to insert your first block. In Insert anything, search Short answer, choose it, and click Insert. Replace Type a question with 'Launch date' and mark it required. At the next empty insertion point, search File upload, choose it, click Insert, replace Type a question with 'Sputnik 1 image', and mark it required. Publish and open the responder link. Invoke upload_files on the image control with only Sputnik_1.jpg, enter the launch date, and submit once. In Submissions verify the date and uploaded filename.",
       "category": "forms/tally_create",
       "environment_profile": "public",
       "environment": {
@@ -2980,7 +2980,7 @@
     {
       "task_id": "RBA-084",
       "title": "Google Form exoplanets Kepler-186f",
-      "confirmed_task": "Create a Google Form for exoplanets with text questions and a file upload field. Search the web for the distance to Kepler-186f and an artist's rendition of the planet. Fill the live form, submit it, and verify the data in the Google Forms Responses tab.",
+      "confirmed_task": "Navigate to https://science.nasa.gov/asset/webb/exoplanet-kepler-186f-illustration/, record Distance under About the Object, then under Downloads choose one JPG or PNG artist rendition under 10 MB. In Google Forms choose Blank form and set the form title to 'Kepler-186f Exoplanet Record'. Reuse the existing Untitled Question card for a required Short answer labelled 'Distance to Kepler-186f'. Click Add question exactly once for 'Artist rendition', change only that second card to File upload, confirm the file-upload warning, and mark it required. Publish, copy the responder link, and open it. Invoke upload_files on Add file with only the downloaded rendition, enter the distance, and submit once. In Responses verify the distance and uploaded filename.",
       "category": "forms/google_forms",
       "environment_profile": "public",
       "environment": {
@@ -3009,7 +3009,7 @@
     {
       "task_id": "RBA-085",
       "title": "Google Form Mammoth Cave length",
-      "confirmed_task": "Build a text-only Google Form to log the world's largest cave systems. Search the web for the total surveyed length of Mammoth Cave in Kentucky. Submit this information through the form and verify it in the backend.",
+      "confirmed_task": "Navigate to https://home.nps.gov/maca/learn/management/statistics.htm and record Total Length of Mammoth Cave (to date) with its unit. In Google Forms choose Blank form and set the form title to 'Mammoth Cave Survey'. Reuse the single existing Untitled Question card: label it 'Total surveyed length with unit', choose Short answer from the question-type menu, and mark it required. Do not click Add question and do not leave another Untitled Question. Publish, copy the responder link, open it, enter the length with its unit, and submit once. In Responses verify the single value.",
       "category": "forms/google_forms",
       "environment_profile": "public",
       "environment": {
@@ -3037,7 +3037,7 @@
     {
       "task_id": "RBA-086",
       "title": "Google Form Treaty of Versailles",
-      "confirmed_task": "Design a text-only Google Form to catalog historical treaties. Search the web for the exact signing date and location of the Treaty of Versailles. Submit this information through the form and verify it in the backend.",
+      "confirmed_task": "Navigate to https://en.chateauversailles.fr/discover/history/key-dates/treaty-versailles-1919 and read the opening account to record the exact signing date and named room. In Google Forms choose Blank form and title it 'Treaty of Versailles'. Reuse the existing Untitled Question card for a required Short answer labelled 'Signing date'; keep it a text question rather than Date. Click Add question once, label the new card 'Signing location', choose Short answer, and mark it required. Publish, copy and open the responder link, enter both values, and submit once. In Responses verify the date and location.",
       "category": "forms/google_forms",
       "environment_profile": "public",
       "environment": {
@@ -3065,7 +3065,7 @@
     {
       "task_id": "RBA-087",
       "title": "Google Form OOP pillars",
-      "confirmed_task": "Create a text-only Google Form to document programming paradigms. Search the web for the definitions of the four main pillars of Object-Oriented Programming. Submit this information through the form and verify it in the backend.",
+      "confirmed_task": "Navigate to https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/tutorials/oop and record one concise definition for each of the four basic object-oriented principles: encapsulation, abstraction, inheritance, and polymorphism. In Google Forms choose Blank form and title it 'Object-Oriented Programming Pillars'. Reuse the existing Untitled Question card for required Paragraph question 'Encapsulation definition'. Click Add question three times, once per remaining required Paragraph card, and label them 'Abstraction definition', 'Inheritance definition', and 'Polymorphism definition'. Confirm exactly four cards and no Untitled Question remains. Publish, open the responder link, submit all four definitions once, and verify every value in Responses.",
       "category": "forms/google_forms",
       "environment_profile": "public",
       "environment": {
@@ -3093,7 +3093,7 @@
     {
       "task_id": "RBA-088",
       "title": "Google Form Michelangelo David",
-      "confirmed_task": "Set up a Google Form about Renaissance art requiring text descriptions and an image upload. Search the web for the exact height of Michelangelo's David and a photograph of the sculpture. Fill out the form, submit it, and validate the entry in the linked Google Sheet.",
+      "confirmed_task": "Navigate to https://www.galleriaaccademiafirenze.it/en/artworks/david-michelangelo/ and record the exact height under Data sheet, Dimensions. Open https://commons.wikimedia.org/wiki/File:Michelangelos_David.jpg and download its 1,200 by 1,600 Original file, which is below the 10 MB Forms limit. In Google Forms choose Blank form and title it 'Michelangelo's David'. Reuse the existing Untitled Question for required Short answer 'Exact height with unit'. Click Add question once, label it 'Sculpture photograph', change it to File upload, confirm the warning, and require it. Publish and open the responder link. Invoke upload_files on Add file with only that JPG, enter the height, and submit once. In Responses open or create the linked Sheet and verify the height and filename in its row.",
       "category": "forms/google_forms",
       "environment_profile": "public",
       "environment": {
@@ -3122,7 +3122,7 @@
     {
       "task_id": "RBA-089",
       "title": "Google Form Burj Khalifa height",
-      "confirmed_task": "Build a Google Form for modern skyscrapers with text fields and an image upload question. Search the web for the exact architectural height of the Burj Khalifa and a skyline photo. Submit the form and verify the data in the Google Forms Responses tab.",
+      "confirmed_task": "Open https://www.burjkhalifa.ae/img/FACT-SHEET.pdf and read Tallest of the Tall for Height to Architectural Top. Open https://commons.wikimedia.org/wiki/File:Burj_Khalifa_panorama_view.jpg and download its 4.47 MB Original file. In Google Forms choose Blank form and title it 'Burj Khalifa'. Reuse the existing Untitled Question for required Short answer 'Architectural height with unit'. Click Add question once, label it 'Skyline photograph', change it to File upload, confirm the warning, and require it. Publish and open the responder link. Invoke upload_files on Add file with only the panorama JPG, enter the architectural height, and submit once. In Responses verify the height and uploaded filename.",
       "category": "forms/google_forms",
       "environment_profile": "public",
       "environment": {
@@ -3151,7 +3151,7 @@
     {
       "task_id": "RBA-090",
       "title": "Google Form Five Mother Sauces",
-      "confirmed_task": "Create a text-only Google Form to document classic French cuisine. Search the web for a complete list and description of the Five Mother Sauces. Submit this information through the form and verify it in the backend.",
+      "confirmed_task": "Navigate to https://www.escoffier.edu/blog/recipes/how-to-make-the-five-mother-sauces/ and record all five named sauces from the five named sauce sections plus one concise description of each sauce's base. In Google Forms choose Blank form and title it 'Five Mother Sauces'. Reuse the single existing Untitled Question card: label it 'Complete list and description', choose Paragraph, and mark it required. Do not click Add question and do not leave another Untitled Question. Publish and open the responder link, enter all five sauce names with five separate base descriptions, and submit exactly once. In Responses verify there is one response containing the complete list.",
       "category": "forms/google_forms",
       "environment_profile": "public",
       "environment": {
@@ -3179,7 +3179,7 @@
     {
       "task_id": "RBA-091",
       "title": "Google Form Usain Bolt 100m",
-      "confirmed_task": "Build a Google Form for Olympic track records with text fields and an image upload question. Search the web for Usain Bolt's exact 100m world record time and a photo of him crossing the finish line. Submit the form and verify the data in the Google Forms Responses tab.",
+      "confirmed_task": "Open https://worldathletics.org/competitions/world-athletics-championships/world-athletics-championships-berlin-2009-6998524/results/men/100-metres/final/result and record Usain Bolt's Mark. Open https://commons.wikimedia.org/wiki/File:Boltarrivee200.jpg, confirm the description shows Bolt crossing the finish line, select Original file, and download the JPG. In Google Forms choose Blank form and title it 'Usain Bolt 100m World Record'. Reuse the existing Untitled Question for required Short answer 'Exact world-record time'. Click Add question once, label it 'Finish-line photograph', change it to File upload, confirm the warning, and require it. Publish and open the responder link. Invoke upload_files on Add file with only that JPG, enter the record time, and submit once. Verify time and filename in Responses.",
       "category": "forms/google_forms",
       "environment_profile": "public",
       "environment": {
@@ -3208,7 +3208,7 @@
     {
       "task_id": "RBA-092",
       "title": "Google Form Stuxnet cybersecurity",
-      "confirmed_task": "Build a text-only Google Form to track major cybersecurity events. Search the web for the primary industrial target and discovery year of the Stuxnet computer worm. Fill out the form, submit it, and validate the received data in the Responses tab.",
+      "confirmed_task": "Navigate to https://www.cisa.gov/news-events/ics-advisories/icsa-10-272-01 and use the advisory date, Overview, and Affected Products to identify Stuxnet's discovery year and primary Siemens industrial target. In Google Forms choose Blank form and title it 'Stuxnet Cybersecurity Event'. Reuse the existing Untitled Question for required Short answer 'Primary industrial target'. Click Add question once for required Short answer 'Discovery year'. Confirm only those two cards remain. Publish, open the responder link, enter both values, submit once, and verify both in Responses.",
       "category": "forms/google_forms",
       "environment_profile": "public",
       "environment": {
@@ -3236,7 +3236,7 @@
     {
       "task_id": "RBA-093",
       "title": "Google Form Globe Theatre",
-      "confirmed_task": "Create a text-only Google Form to document historic theatres. Search the web for the original construction year and location of Shakespeare's Globe Theatre. Fill out the form, submit it, and validate the received data in the Responses tab.",
+      "confirmed_task": "Navigate to https://www.shakespearesglobe.com/discover/shakespeares-world/the-globe/ and read When and where was the Globe built? for the original construction year and Southwark location. In Google Forms choose Blank form and title it 'Shakespeare's Globe Theatre'. Reuse the existing Untitled Question for required Short answer 'Original construction year'. Click Add question once for required Short answer 'Original location'. Confirm exactly those two cards, click Publish, open the responder link, submit both values once, and verify both in Responses.",
       "category": "forms/google_forms",
       "environment_profile": "public",
       "environment": {
@@ -3264,7 +3264,7 @@
     {
       "task_id": "RBA-094",
       "title": "Google Form Everest summit date",
-      "confirmed_task": "Draft a text-only Google Form to log mountaineering milestones. Search the web for the exact date Edmund Hillary and Tenzing Norgay first summited Mount Everest. Submit this information through the form and verify it in the backend.",
+      "confirmed_task": "Navigate to https://www.rgs.org/our-collections/buy-and-license-images/platinum-prints/everest-1953 and read the opening account to record the exact date Hillary and Tenzing reached the summit. In Google Forms choose Blank form and title it 'First Everest Summit'. Reuse the single existing Untitled Question card: label it 'Exact summit date', choose Short answer rather than Date, and mark it required. Do not click Add question. Publish and open the responder link, enter the complete date as text, submit once, and verify that exact text value in Responses.",
       "category": "forms/google_forms",
       "environment_profile": "public",
       "environment": {
@@ -3292,7 +3292,7 @@
     {
       "task_id": "RBA-095",
       "title": "Google Form Chuck Yeager sound barrier",
-      "confirmed_task": "Set up a text-only Google Form to document aviation speed records. Search the web for the exact date Chuck Yeager broke the sound barrier and the name of his aircraft. Fill out the form, submit it, and validate that the text was correctly received in the Responses tab.",
+      "confirmed_task": "Navigate to https://airandspace.si.edu/stories/editorial/breaking-sound-barrier and record the exact date and aircraft name from the opening account of Chuck Yeager's first supersonic flight. In Google Forms choose Blank form and title it 'Chuck Yeager Sound Barrier Record'. Reuse the existing Untitled Question for required Short answer 'Record date'; keep it text rather than Date. Click Add question once for required Short answer 'Aircraft name'. Confirm exactly those two cards, click Publish, open the responder link, enter both values, submit once, and verify both in Responses.",
       "category": "forms/google_forms",
       "environment_profile": "public",
       "environment": {
@@ -3320,7 +3320,7 @@
     {
       "task_id": "RBA-096",
       "title": "ATO simulator pre-fill employment extraction",
-      "confirmed_task": "In the ATO online services simulator, identify yourself as Other and choose scenario 5, 'Working holiday maker - lodge myTax, new employment'. In the 2025-26 return, report the taxpayer display name and the employer, gross payment, and tax withheld shown in the pre-filled employment-income item. Do not change or lodge anything.",
+      "confirmed_task": "At the ATO online services simulator, choose Other, select scenario 5, 'Working holiday maker - lodge myTax, new employment', and click Start. On Home, open Jul 2025 - Jun 2026 Tax return with Prepare. Continue through Contact details, Financial institution details, and Personalise return without editing them. On Prepare your 2025-26 return, use the pre-filled employer row under Income statements and payment summaries, not the overall taxable-income total. Report the taxpayer display name, employer, gross payment, and tax withheld; do not change or lodge the return.",
       "category": "official_simulator/record_extraction",
       "environment_profile": "ato",
       "environment": {
@@ -3357,7 +3357,7 @@
     {
       "task_id": "RBA-097",
       "title": "FCC equipment authorization lookup",
-      "confirmed_task": "On the FCC Equipment Authorization search, look up grantee code 2AG32 and product code BSC7261A249D. From the matching authorization record, report the applicant, grant purpose, grant date, and frequency range. Do not download private exhibits.",
+      "confirmed_task": "In the FCC Equipment Authorization search, enter 2AG32 in Grantee Code and BSC7261A249D in Product Code, keep the product match exact, and click Search. On OET Authorization Search Results, use the exact matching FCC ID row. Report its applicant, grant purpose, grant date, and displayed lower-to-upper frequency range; do not download private exhibits.",
       "category": "registry/equipment_authorization",
       "environment_profile": "public",
       "environment": {
@@ -3393,7 +3393,7 @@
     {
       "task_id": "RBA-098",
       "title": "FDA 510(k) decision summary",
-      "confirmed_task": "On FDA AccessData, open 510(k) record K193299 and report the device name, applicant, decision date, and decision type shown on its detail page. Do not submit any filings.",
+      "confirmed_task": "In FDA AccessData's 510(k) search, enter K193299 in 510K Number and click Search. Open the exact K193299 record if the detail is not already displayed. From that record, report the device name, applicant, decision date, and decision type; do not use a search snippet or submit a filing.",
       "category": "registry/medical_device",
       "environment_profile": "public",
       "environment": {
@@ -3427,7 +3427,7 @@
     {
       "task_id": "RBA-099",
       "title": "CBP CROSS ruling lookup",
-      "confirmed_task": "On CBP CROSS, look up ruling J83798 and report its issue date, subject, and tariff classification shown on the ruling page. Do not contact CBP.",
+      "confirmed_task": "In CBP CROSS, search ruling J83798 and open the exact rendered ruling. From that ruling page, report its issue date and subject from the heading and its tariff classification from the ruling content; keep the tariff number distinct from dates and category text, and do not contact CBP.",
       "category": "registry/customs_ruling",
       "environment_profile": "public",
       "environment": {
@@ -3460,7 +3460,7 @@
     {
       "task_id": "RBA-100",
       "title": "USDA organic certification check",
-      "confirmed_task": "On the USDA Organic Integrity Database, open the operation profile with NOP ID 6903966799 and report the operation name, certification status, scopes, and total certified acres. Do not contact the certifier.",
+      "confirmed_task": "In the USDA Organic Integrity Database, open Advanced Search, enter 6903966799 in NOP Operation ID, and click Search. Open the exact matching operation profile and verify that it shows that NOP ID. From the profile header, Operation Details, and Scope and Product Summary, report the operation name, certification status, every scope, and total certified acres; do not contact the certifier.",
       "category": "registry/certification_status",
       "environment_profile": "public",
       "environment": {
